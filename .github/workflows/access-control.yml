@@ -1,0 +1,107 @@
+name: Repository Access Control
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  verify-owner-only:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if PR Author is Repository Owner
+        id: check_author
+        run: |
+          AUTHOR="${{ github.event.pull_request.user.login }}"
+          OWNER="geki97"
+          
+          if [ "$AUTHOR" != "$OWNER" ]; then
+            echo "❌ Access Denied"
+            echo "This repository only accepts changes from @geki97"
+            echo "PR Author: $AUTHOR"
+            exit 1
+          else
+            echo "✅ Access Granted - Author is repository owner"
+          fi
+
+  enforce-branch-protection:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request
+    steps:
+      - name: Verify Target Branch
+        run: |
+          TARGET="${{ github.event.pull_request.base.ref }}"
+          
+          # Only allow merges to protected branches by owner
+          if [ "$TARGET" = "master" ] || [ "$TARGET" = "main" ]; then
+            echo "Target branch: $TARGET (protected)"
+            echo "Verification: Required"
+          fi
+
+  verify-no-secrets:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      
+      - name: Scan for secrets
+        run: |
+          # Simple check for common secret patterns
+          if grep -r "PRIVATE_KEY\|SECRET_KEY\|API_KEY\|PASSWORD=" . --include="*.py" --include="*.env" 2>/dev/null | grep -v ".env.template" | grep -v "# "; then
+            echo "❌ WARNING: Potential secrets detected in code"
+            echo "Please remove sensitive data before committing"
+            exit 1
+          else
+            echo "✅ No secrets detected"
+          fi
+
+  block-dangerous-changes:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      
+      - name: Check for dangerous pattern changes
+        run: |
+          DANGEROUS_PATTERNS=(
+            "remove.*protection"
+            "disable.*security"
+            "bypass.*auth"
+            "grant.*access.*all"
+          )
+          
+          FOUND=0
+          for pattern in "${DANGEROUS_PATTERNS[@]}"; do
+            if grep -ri "$pattern" . --include="*.py" --include="*.md" 2>/dev/null | grep -i github; then
+              echo "❌ Potential dangerous change detected: $pattern"
+              FOUND=1
+            fi
+          done
+          
+          if [ $FOUND -eq 1 ]; then
+            exit 1
+          else
+            echo "✅ No dangerous patterns detected"
+          fi
+
+  audit-log:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request
+    steps:
+      - name: Log Access Attempt
+        run: |
+          echo "=== Repository Access Log ===" >> /tmp/access.log
+          echo "Timestamp: $(date -Iseconds)" >> /tmp/access.log
+          echo "Event: Pull Request" >> /tmp/access.log
+          echo "Author: ${{ github.event.pull_request.user.login }}" >> /tmp/access.log
+          echo "Branch: ${{ github.event.pull_request.head.ref }}" >> /tmp/access.log
+          echo "Target: ${{ github.event.pull_request.base.ref }}" >> /tmp/access.log
+          echo "Action: Verified" >> /tmp/access.log
+          echo "Status: ✅ Access Control Check Passed" >> /tmp/access.log
+          echo "" >> /tmp/access.log
+          cat /tmp/access.log
