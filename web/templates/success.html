@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-In Successful</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .nav-links {
+            text-align: center;
+            margin: 25px 0;
+        }
+        
+        .nav-links a {
+            display: inline-block;
+            margin: 0 15px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .success-message {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 3px solid #28a745;
+            border-radius: 8px;
+            padding: 40px 30px;
+            text-align: center;
+            margin: 30px 0;
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+        }
+        
+        .success-message h2 {
+            color: #155724;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .volunteer-name {
+            font-size: 36px;
+            font-weight: bold;
+            color: #28a745;
+            margin: 20px 0;
+        }
+        
+        .success-icon {
+            font-size: 80px;
+            margin: 20px 0;
+            animation: bounce 0.6s ease-in-out 3;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .status-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Check-In Successful!</h1>
+            <p>Thank you for volunteering</p>
+        </header>
+        <nav class="nav-links">
+            <a href="/">Back to Home</a>
+            <a href="/upcoming-shifts">View All Shifts</a>
+        </nav>
+
+        <main>
+            <div class="success-section">
+                <div class="success-message">
+                    <div class="success-icon">✅</div>
+                    <h2>Check-In Confirmed!</h2>
+                    {% if volunteer_name %}
+                        <div class="volunteer-name">{{ volunteer_name }}</div>
+                    {% endif %}
+                    <p style="color: #155724; font-size: 16px; margin: 15px 0;">Thank you for volunteering today!</p>
+                    <div class="status-badge">✓ Checked In</div>
+                </div>
+
+                <div class="shift-card">
+                    <h3>📋 What's Next?</h3>
+                    <ul style="text-align: left; margin-left: 20px;">
+                        <li>✓ You are now checked in</li>
+                        <li>📍 Report to your shift coordinator upon arrival</li>
+                        <li>👥 Introduce yourself to other volunteers</li>
+                        <li>⏰ Complete your shift responsibilities</li>
+                        <li>👋 Please sign out when finished (if required)</li>
+                    </ul>
+                </div>
+
+                <div class="shift-card">
+                    <h3>❓ Questions or Need Help?</h3>
+                    <p>If you have any questions during your shift, please contact your shift coordinator or a team member.</p>
+                    <p style="margin-top: 15px; font-size: 14px; color: #666;">
+                        <strong>Coordinator Email:</strong> coordinator@foodbank.org<br>
+                        <strong>Support:</strong> Call the main office during business hours
+                    </p>
+                </div>
+
+                <div class="button-group" style="margin-top: 40px;">
+                    <a href="/" class="btn btn-primary">Back to Home</a>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Food Bank Volunteer Management System</p>
+        </footer>
+    </div>
+</body>
+</html>

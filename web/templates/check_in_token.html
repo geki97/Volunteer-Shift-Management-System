@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shift Check-In - Secure</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .nav-links {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .nav-links a {
+            display: inline-block;
+            margin: 0 15px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .security-badge {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            color: #155724;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .security-badge strong {
+            display: block;
+            color: #28a745;
+        }
+        
+        .shift-details {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #0066cc;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .shift-details strong {
+            color: #0066cc;
+        }
+        
+        .shift-details p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        
+        .check-in-form {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .form-group {
+            margin: 15px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .form-group input[type="text"],
+        .form-group input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        .button {
+            background-color: #0066cc;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        
+        .button:hover {
+            background-color: #0052a3;
+        }
+        
+        .button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0066cc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            color: #155724;
+            display: block;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-links">
+            <a href="/">← Back to Home</a>
+        </div>
+        
+        <h1> Volunteer Check-In</h1>
+        
+        <div class="security-badge">
+            <strong> Secure Check-In</strong>
+            This QR code is cryptographically signed and will expire in 25 hours.
+        </div>
+        
+        <div class="shift-details">
+            <h2>Shift Details</h2>
+            <p><strong>Shift Name:</strong> {{ shift.shift_name }}</p>
+            <p><strong>Date:</strong> {{ shift.shift_date }}</p>
+            <p><strong>Location:</strong> {{ shift.location }}</p>
+            {% if shift.special_instructions %}
+            <p><strong>Special Instructions:</strong> {{ shift.special_instructions }}</p>
+            {% endif %}
+        </div>
+        
+        <div class="check-in-form">
+            <h2>Your Information</h2>
+            <form id="checkInForm">
+                <div class="form-group">
+                    <label for="volunteerName">Full Name *</label>
+                    <input 
+                        type="text" 
+                        id="volunteerName" 
+                        name="volunteer_name"
+                        placeholder="Enter your full name"
+                        required
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="volunteerEmail">Email Address *</label>
+                    <input 
+                        type="email" 
+                        id="volunteerEmail" 
+                        name="volunteer_email"
+                        placeholder="your.email@example.com"
+                        required
+                    >
+                </div>
+                
+                <button type="submit" class="button" id="checkInBtn">
+                    Check In Now
+                </button>
+            </form>
+            
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+    
+    <script>
+        const token = "{{ token }}";
+        const shiftId = "{{ shift_id }}";
+        
+        document.getElementById('checkInForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const volunteerName = document.getElementById('volunteerName').value.trim();
+            const volunteerEmail = document.getElementById('volunteerEmail').value.trim();
+            const messageDiv = document.getElementById('message');
+            const submitBtn = document.getElementById('checkInBtn');
+            
+            // Validate inputs
+            if (!volunteerName || !volunteerEmail) {
+                showMessage('Please fill in all fields', 'error');
+                return;
+            }
+            
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Processing...';
+            
+            try {
+                const response = await fetch(`/check-in/token/${token}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        volunteer_name: volunteerName,
+                        volunteer_email: volunteerEmail
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    showMessage(' Check-in successful! Thank you for volunteering!', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                } else {
+                    showMessage(`Check-in failed: ${data.error || 'Unknown error'}`, 'error');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Check In Now';
+                }
+            } catch (error) {
+                console.error('Check-in error:', error);
+                showMessage('Network error. Please try again.', 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Check In Now';
+            }
+        });
+        
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+        }
+    </script>
+</body>
+</html>
