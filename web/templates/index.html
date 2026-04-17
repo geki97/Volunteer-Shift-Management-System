@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Check-In System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤝 Volunteer Check-In System</h1>
+            <p>Food Bank Volunteering</p>
+        </header>
+
+        <main>
+            <div class="welcome-section">
+                <h2>Welcome to the Volunteer Management System</h2>
+                <p>Powered by AppFlowy - Food Bank Volunteering 2026</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-button active" data-tab="volunteers">Volunteers</button>
+                <button class="tab-button" data-tab="shifts">Upcoming Shifts</button>
+                <button class="tab-button" data-tab="checkin">Quick Check-In</button>
+            </div>
+
+            <!-- Volunteers Tab -->
+            <div id="volunteers-tab" class="tab-content active">
+                <h3>Active Volunteers</h3>
+                <div id="volunteers-list" class="card-grid">
+                    <div class="spinner"></div> Loading volunteers from AppFlowy...
+                </div>
+            </div>
+
+            <!-- Shifts Tab -->
+            <div id="shifts-tab" class="tab-content">
+                <h3>Upcoming Shifts (Next 7 Days)</h3>
+                <a href="/upcoming-shifts" style="display: inline-block; margin-bottom: 20px; padding: 12px 24px; background: #28a745; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; transition: all 0.3s ease;" onmouseover="this.style.background='#1e7e34'" onmouseout="this.style.background='#28a745'">
+                    📅 View All Upcoming Shifts
+                </a>
+                <div id="shifts-list" class="card-grid">
+                    <div class="spinner"></div> Loading shifts from AppFlowy...
+                </div>
+            </div>
+
+            <!-- Quick Check-In Tab -->
+            <div id="checkin-tab" class="tab-content">
+                <h3>Quick Check-In</h3>
+                <div class="card">
+                    <p>Have a QR code? Scan it or enter your shift ID:</p>
+                    <input type="text" id="shift-id-input" placeholder="Enter Shift ID" class="input-field">
+                    <button onclick="handleQuickCheckin()" class="btn-primary">Check In</button>
+                </div>
+            </div>
+
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Food Bank Volunteer Management System</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                
+                this.classList.add('active');
+                document.getElementById(this.dataset.tab + '-tab').classList.add('active');
+                
+                if (this.dataset.tab === 'volunteers') loadVolunteers();
+                if (this.dataset.tab === 'shifts') loadShifts();
+            });
+        });
+
+        // Load volunteers from AppFlowy/Supabase
+        async function loadVolunteers() {
+            try {
+                const response = await fetch('/api/volunteers');
+                if (!response.ok) throw new Error('Failed to load volunteers');
+                
+                const data = await response.json();
+                const list = document.getElementById('volunteers-list');
+                
+                if (data.success && data.volunteers.length > 0) {
+                    list.innerHTML = data.volunteers.map(v => `
+                        <div class="card">
+                            <h4>${v.name}</h4>
+                            <p><strong>Email:</strong> ${v.email}</p>
+                            <p><strong>Phone:</strong> ${v.phone || 'N/A'}</p>
+                            <p><strong>Status:</strong> <span class="status-badge">${v.status}</span></p>
+                            <p><strong>Skills:</strong> ${v.skills ? v.skills.join(', ') : 'Not specified'}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    list.innerHTML = '<p>No volunteers found. Data will appear once synced from AppFlowy.</p>';
+                }
+            } catch (error) {
+                document.getElementById('volunteers-list').innerHTML = 
+                    '<p style="color: red;">Error loading volunteers: ' + error.message + '</p>';
+            }
+        }
+
+        // Load shifts from Supabase
+        async function loadShifts() {
+            try {
+                const response = await fetch('/api/shifts/upcoming');
+                if (!response.ok) throw new Error('Failed to load shifts');
+                
+                const data = await response.json();
+                const list = document.getElementById('shifts-list');
+                
+                if (data.success && data.shifts.length > 0) {
+                    list.innerHTML = data.shifts.map(s => `
+                        <div class="card">
+                            <h4>${s.shift_name}</h4>
+                            <p><strong>Date:</strong> ${new Date(s.shift_date).toLocaleDateString()}</p>
+                            <p><strong>Time:</strong> ${s.shift_start_time} - ${s.shift_end_time}</p>
+                            <p><strong>Location:</strong> ${s.location}</p>
+                            <p><strong>Volunteers Needed:</strong> ${s.volunteers_needed}</p>
+                            <p><strong>Coordinator:</strong> ${s.shift_coordinator || 'Not assigned'}</p>
+                            <button onclick="goToCheckin('${s.id}')" class="btn-primary">Check In for Shift</button>
+                        </div>
+                    `).join('');
+                } else {
+                    list.innerHTML = '<p>No upcoming shifts found. Check back soon!</p>';
+                }
+            } catch (error) {
+                document.getElementById('shifts-list').innerHTML = 
+                    '<p style="color: red;">Error loading shifts: ' + error.message + '</p>';
+            }
+        }
+
+        // Quick check-in
+        function handleQuickCheckin() {
+            const shiftId = document.getElementById('shift-id-input').value.trim();
+            if (!shiftId) {
+                alert('Please enter a Shift ID');
+                return;
+            }
+            goToCheckin(shiftId);
+        }
+
+        function goToCheckin(shiftId) {
+            window.location.href = `/check-in/${shiftId}`;
+        }
+
+        loadVolunteers();
+    </script>
+</body>
+</html>

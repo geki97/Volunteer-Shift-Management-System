@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upcoming Shifts</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .shifts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 100%;
+        }
+        
+        .shift-list-item {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-top: 5px solid #0066cc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .shift-list-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+            border-top-color: #28a745;
+        }
+        
+        .shift-list-item h3 {
+            color: #0066cc;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .shift-info {
+            background: #f5f7fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #333;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .volunteers-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e6ed;
+        }
+        
+        .volunteers-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .volunteer-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .volunteer-chip {
+            display: inline-block;
+            background: #e0e6ed;
+            color: #333;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+        
+        .check-in-button {
+            margin-top: 15px;
+            padding: 12px 24px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .check-in-button:hover {
+            background: #1e7e34;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-state p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .home-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #0066cc;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .home-button:hover {
+            background: #0052a3;
+            box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+        }
+    </style>
+    <style>
+        .nav-links {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .nav-links a {
+            display: inline-block;
+            margin: 0 15px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Upcoming Shifts</h1>
+            <p>Select a shift to check in</p>
+        </header>
+        <nav class="nav-links">
+            <a href="/">Back to Home</a>
+        </nav>
+
+        <main>
+            {% if shifts %}
+                <div class="shifts-grid">
+                    {% for shift in shifts %}
+                    <div class="shift-list-item" onclick="goToCheckIn('{{ shift.id }}')">
+                        <h3>{{ shift.shift_name }}</h3>
+                        
+                        <div class="shift-info">
+                            <div class="info-item">
+                                <span class="info-label">📅 Date</span>
+                                <span class="info-value">{{ shift.shift_date.split(' ')[0] }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">⏰ Time</span>
+                                <span class="info-value">{{ shift.shift_date.split(' ')[1] }} - {{ shift.end_time }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">📍 Location</span>
+                                <span class="info-value">{{ shift.location }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">👥 Coordinator</span>
+                                <span class="info-value">{{ shift.shift_coordinator }}</span>
+                            </div>
+                        </div>
+                        
+                        {% if shift.special_instructions %}
+                        <div style="background: #fff3cd; padding: 12px; border-radius: 6px; margin-bottom: 15px; border-left: 3px solid #ffc107;">
+                            <strong style="color: #856404;">📋 Instructions:</strong>
+                            <p style="color: #856404; margin-top: 5px; font-size: 14px;">{{ shift.special_instructions }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="volunteers-section">
+                            <div class="volunteers-title">👥 Assigned Volunteers ({{ shift.assigned_volunteers|length }})</div>
+                            <div class="volunteer-chips">
+                                {% for vol_id in shift.assigned_volunteers %}
+                                    {% set volunteer = volunteers_map.get(vol_id, {}) %}
+                                    <div class="volunteer-chip">{{ volunteer.get('name', vol_id) }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <button class="check-in-button">✓ Check In for This Shift</button>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <p>✓ No upcoming shifts available</p>
+                    <p style="font-size: 14px; color: #999;">All scheduled shifts have been completed.</p>
+                    <a href="/" class="home-button">Return to Home</a>
+                </div>
+            {% endif %}
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Food Bank Volunteer Management System</p>
+        </footer>
+    </div>
+
+    <script>
+        function goToCheckIn(shiftId) {
+            window.location.href = `/check-in/${shiftId}`;
+        }
+    </script>
+</body>
+</html>

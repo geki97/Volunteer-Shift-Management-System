@@ -1,0 +1,43 @@
+# Environment variables
+.env
+*.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/*.log
+*.log
+
+# Generated files
+qr_codes/*.png
+reports/*.json
+reports/*.html
+appflowy_exports/*.json
+
+# Credentials
+config/credentials.json
+config/token.json
+*.pem
+*.key
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+.coverage
+htmlcov/

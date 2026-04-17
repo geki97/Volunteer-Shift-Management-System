@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚠️ Error</h1>
+        </header>
+
+        <main>
+            <div class="error-section">
+                <div class="error-icon">❌</div>
+                <h2>{{ error }}</h2>
+                <p>{{ message }}</p>
+
+                <div class="help-section">
+                    <h3>What Can You Do?</h3>
+                    <ul>
+                        <li>Check that you scanned the correct QR code</li>
+                        <li>Verify your email address is correct</li>
+                        <li>Make sure the shift hasn't been cancelled</li>
+                        <li>Contact the coordinator if you continue having issues</li>
+                    </ul>
+                </div>
+
+                <div class="contact-info">
+                    <h3>Need Help?</h3>
+                    <p>Contact the coordinator:</p>
+                    <p><strong>coordinator@foodbank.org</strong></p>
+                </div>
+
+                <div class="button-group">
+                    <a href="/" class="btn btn-primary">Back to Home</a>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Food Bank Volunteer Management System</p>
+        </footer>
+    </div>
+</body>
+</html>

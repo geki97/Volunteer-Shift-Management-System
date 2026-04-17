@@ -1,0 +1,16 @@
+Name,Email,Phone Number ,Skills,Availability,Status,Reliability Score,Total Shifts,Attended Shifts,Missed Shift,Join Date
+Sarah Murphy,sarah.murphy@email.com,353871234567,"Customer Service,Food Prep","Monday,Wednesday,Friday",Active,100,32,32,0,"Oct 01, 2025"
+James O'Connor,james.oconnor@email.com,353862345678,"Setup,Cleanup,Delivery","Tuesday,Thursday,Saturday",Active,88,18,16,2,"Oct 08, 2025"
+Finn O'Brien,finn.obrien@email.com,353870123456,"Food Prep,Delivery,Setup,Cleanup","Monday,Friday,Wednesday,Thursday,Tuesday,Saturday,Sunday",Active,90,30,27,3,"Sep 25, 2025"
+Aoife Ryan,aoife.ryan@email.com,353865678901,"Cleanup,Setup,Customer Service","Wednesday,Friday,Sunday",Active,92,20,19,1,"Sep 22, 2025"
+Rosin Power,roisin.power@email.com,353864567890,"Food Prep,Setup,Cleanup","Sunday,Saturday",Active,96,22,21,1,"Oct 10, 2025"
+Emma Walsh,emma.walsh@email.com,353853456789,"Admin,Customer Service","Monday,Sunday,Saturday",Active,100,32,32,0,"Oct 16, 2025"
+Liam Kelly,liam.kelly@email.com,353874567890,"Delivery,Food Prep","Sunday,Saturday,Friday",Active,78,15,12,3,"Oct 20, 2025"
+Conor Byrne,conor.byrne@email.com,353856789012,Delivery,"Tuesday,Saturday",On Leave,85,12,10,2,"Oct 15, 2025"
+Ciara Doyle,ciara.doyle@email.com,353859012345,"Admin,Customer Service","Monday,Tuesday,Thursday,Wednesday,Friday",Active,98,26,26,0,"Sep 18, 2025"
+Niamh Fitzgerald,niamh.fitz@email.com,353877890123,"Food Prep,Admin","Monday,Wednesday,Friday,Saturday",Active,94,29,27,1,"Jan 09, 2026"
+Clodagh Kavanagh,clodagh.k@email.com,353855678901,"Admin,Customer Service,Food Prep","Monday,Wednesday,Thursday,Friday",Active,93,25,24,1,"Oct 01, 2025"
+OisÃ­n McCarthy,oisin.mccarthy@email.com,353868901234,"Delivery,Setup,Cleanup","Thursday,Friday,Saturday,Sunday",Active,72,10,7,3,"Jan 04, 2026"
+Saoirse Brennan,saoirse.brennan@email.com,353861234567,Admin,"Monday,Wednesday,Friday",Inactive,65,8,5,3,"Nov 20, 2025"
+Darragh Hughes,darragh.hughes@email.com,353852345678,"Delivery,Customer Service","Tuesday,Thursday,Sunday",Active,87,16,14,2,"Sep 10, 2025"
+Cian Murphy,cian.murphy@email.com,353873456789,Delivery,"Friday,Saturday",Active,82,14,11,3,"Jan 11, 2026"
