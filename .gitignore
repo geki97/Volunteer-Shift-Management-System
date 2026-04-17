@@ -28,6 +28,10 @@ reports/*.json
 reports/*.html
 appflowy_exports/*.json
 
+# Temporary files
+tmp*/
+*.tmp
+
 # Credentials
 config/credentials.json
 config/token.json
