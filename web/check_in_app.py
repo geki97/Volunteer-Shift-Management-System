@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from flask import Flask, render_template, jsonify, request, redirect, url_for
+from flask import Flask, render_template, jsonify, request, redirect, url_for, send_file, send_from_directory, abort
 from flask_cors import CORS
 from config.settings import FLASK_SECRET_KEY, FLASK_PORT, FLASK_DEBUG, TIMEZONE, APP_BASE_URL
 from scripts.utils.logger import logger
@@ -42,6 +42,11 @@ except Exception as e:
 app = Flask(__name__)
 app.secret_key = FLASK_SECRET_KEY
 CORS(app)
+
+# Project paths for serving the GitHub Pages-style static frontend during local runs.
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+STATIC_INDEX_PATH = PROJECT_ROOT / "index.html"
+EXPORTS_DIR = PROJECT_ROOT / "appflowy_exports"
 
 # Apply security headers to all responses
 app.after_request(SecurityHeaders.inject_security_headers)
@@ -128,8 +133,21 @@ def load_volunteer_with_fallback(user_id):
 
 @app.route('/')
 def index():
-    """Home page"""
-    return render_template('index.html')
+    """Home page (serve the shared static index.html)."""
+    if not STATIC_INDEX_PATH.exists():
+        abort(404)
+    return send_file(STATIC_INDEX_PATH)
+
+
+@app.route("/appflowy_exports/<path:filename>")
+def serve_appflowy_export_file(filename):
+    """Serve AppFlowy export files for the static frontend."""
+    suffix = Path(filename).suffix.lower()
+    if suffix not in {".json", ".csv"}:
+        abort(404)
+    if not EXPORTS_DIR.exists():
+        abort(404)
+    return send_from_directory(EXPORTS_DIR, filename)
 
 @app.route('/check-in/token/<token>', methods=['GET', 'POST'])
 @rate_limit_check(max_requests_per_minute=30)

@@ -348,7 +348,7 @@
 
         // Load volunteers from JSON
         function loadVolunteers() {
-            fetch('appflowy_exports/volunteers.json')
+            fetch('./appflowy_exports/volunteers.json')
                 .then(response => response.json())
                 .then(volunteers => {
                     const list = document.getElementById('volunteers-list');
@@ -376,7 +376,7 @@
 
         // Load shifts from JSON
         function loadShifts() {
-            fetch('appflowy_exports/shifts.json')
+            fetch('./appflowy_exports/shifts.json')
                 .then(response => response.json())
                 .then(shifts => {
                     const list = document.getElementById('shifts-list');
