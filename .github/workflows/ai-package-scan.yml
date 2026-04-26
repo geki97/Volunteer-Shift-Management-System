@@ -1,0 +1,27 @@
+name: AI Package Scan
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Scan requirements for banned AI packages
+        run: |
+          set -e
+          if [ -f requirements.txt ]; then
+            banned_regex='openai|transformers|torch|tensorflow|langchain|anthropic|cohere|huggingface|llama|ggml|diffusers|stable-diffusion'
+            if grep -Eiq "$banned_regex" requirements.txt; then
+              echo "Banned AI packages found in requirements.txt"
+              grep -nE "$banned_regex" requirements.txt || true
+              exit 1
+            else
+              echo "No banned AI packages found."
+            fi
+          else
+            echo "No requirements.txt found to scan."
+          fi
