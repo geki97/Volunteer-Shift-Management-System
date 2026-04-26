@@ -4,241 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Volunteer Check-In System</title>
-    <style>
-        /* Global Styles */
-        :root {
-            --primary-color: #0066cc;
-            --primary-dark: #0052a3;
-            --secondary-color: #28a745;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --light-bg: #f5f7fa;
-            --border-color: #e0e6ed;
-            --text-color: #333;
-            --text-light: #666;
-            --shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            font-size: 16px;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f8f9fa;
-            color: var(--text-color);
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            margin-bottom: 30px;
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-
-        header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        main {
-            flex: 1;
-            padding: 20px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .card h4 {
-            color: var(--primary-color);
-            margin-bottom: 12px;
-            font-size: 1.2rem;
-        }
-
-        .welcome-section {
-            background: white;
-            border-radius: 8px;
-            padding: 40px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            margin-bottom: 30px;
-        }
-
-        .welcome-section h2 {
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin: 30px 0;
-            border-bottom: 2px solid var(--border-color);
-            flex-wrap: wrap;
-        }
-
-        .tab-button {
-            background: none;
-            border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text-light);
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
-        }
-
-        .tab-button:hover {
-            color: var(--primary-color);
-        }
-
-        .tab-button.active {
-            color: var(--primary-color);
-            border-bottom-color: var(--primary-color);
-        }
-
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .tab-content h3 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-size: 1.5rem;
-        }
-
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .card {
-            background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border-top: 4px solid var(--primary-color);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transform: translateY(-2px);
-        }
-
-        .card h4 {
-            color: var(--primary-color);
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-
-        .card p {
-            margin: 10px 0;
-            color: var(--text-light);
-        }
-
-        .card strong {
-            color: var(--text-color);
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        .status-badge.inactive {
-            background-color: var(--warning-color);
-            color: #333;
-        }
-
-        footer {
-            background: var(--text-color);
-            color: white;
-            text-align: center;
-            padding: 20px;
-            margin-top: auto;
-            border-top: 2px solid var(--border-color);
-        }
-
-        footer p {
-            margin: 5px 0;
-        }
-
-        footer a {
-            color: white;
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 768px) {
-            header {
-                padding: 30px 15px;
-            }
-
-            header h1 {
-                font-size: 2rem;
-            }
-
-            .card-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .welcome-section {
-                padding: 20px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="./web/static/css/style.css">
 </head>
 <body>
     <div class="container">
@@ -256,6 +22,7 @@
             <div class="tabs">
                 <button class="tab-button active" data-tab="volunteers">Volunteers</button>
                 <button class="tab-button" data-tab="shifts">Upcoming Shifts</button>
+                <button class="tab-button" data-tab="checkin">Quick Check-In</button>
             </div>
 
             <div id="volunteers-tab" class="tab-content active">
@@ -271,6 +38,20 @@
                     <div class="spinner"></div> Loading shifts...
                 </div>
             </div>
+
+            <div id="checkin-tab" class="tab-content">
+                <h3>Quick Check-In</h3>
+                <div class="card">
+                    <p>Paste a token (or open this page from a QR scan):</p>
+                    <input type="text" id="token-input" class="input-field" placeholder="token..." style="width: 100%; max-width: 720px;">
+                    <div style="margin-top: 12px;">
+                        <a class="btn-primary" id="open-checkin-link" href="./check-in.html">Open Check-In Page</a>
+                    </div>
+                    <p style="margin-top: 10px; color: var(--text-light);">
+                        Tip: The QR code should open <code>check-in.html?token=...</code>.
+                    </p>
+                </div>
+            </div>
         </main>
 
         <footer>
@@ -279,79 +60,9 @@
         </footer>
     </div>
 
-    <script>
-        document.querySelectorAll('.tab-button').forEach(button => {
-            button.addEventListener('click', function() {
-                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-
-                this.classList.add('active');
-                document.getElementById(this.dataset.tab + '-tab').classList.add('active');
-
-                if (this.dataset.tab === 'volunteers') loadVolunteers();
-                if (this.dataset.tab === 'shifts') loadShifts();
-            });
-        });
-
-        function loadVolunteers() {
-            fetch('./appflowy_exports/volunteers.json')
-                .then(response => response.json())
-                .then(volunteers => {
-                    const list = document.getElementById('volunteers-list');
-
-                    if (volunteers && volunteers.length > 0) {
-                        list.innerHTML = volunteers.map(v => `
-                            <div class="card">
-                                <h4>${v.name || 'Unknown'}</h4>
-                                <p><strong>Email:</strong> ${v.email || 'N/A'}</p>
-                                <p><strong>Phone:</strong> ${v.phone || 'N/A'}</p>
-                                <p><strong>Status:</strong> <span class="status-badge ${v.status !== 'Active' ? 'inactive' : ''}">${v.status || 'Unknown'}</span></p>
-                                <p><strong>Availability:</strong> ${v.availability || 'Not specified'}</p>
-                            </div>
-                        `).join('');
-                    } else {
-                        list.innerHTML = '<p>No volunteers found.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading volunteers:', error);
-                    document.getElementById('volunteers-list').innerHTML =
-                        '<p style="color: red;">Error loading volunteers: ' + error.message + '</p>';
-                });
-        }
-
-        function loadShifts() {
-            fetch('./appflowy_exports/shifts.json')
-                .then(response => response.json())
-                .then(shifts => {
-                    const list = document.getElementById('shifts-list');
-
-                    if (shifts && shifts.length > 0) {
-                        list.innerHTML = shifts.map(s => `
-                            <div class="card">
-                                <h4>${s.shift_name || 'Unknown Shift'}</h4>
-                                <p><strong>Date:</strong> ${s.shift_date || 'N/A'}</p>
-                                <p><strong>Location:</strong> ${s.location || 'N/A'}</p>
-                                <p><strong>Volunteers Assigned:</strong> ${(s.assigned_volunteers || []).length}</p>
-                                ${s.special_instructions ? `<p><strong>Instructions:</strong> ${s.special_instructions}</p>` : ''}
-                                ${s.assigned_volunteers && s.assigned_volunteers.length > 0 ? `
-                                    <p><strong>Team:</strong> ${s.assigned_volunteers.join(', ')}</p>
-                                ` : ''}
-                            </div>
-                        `).join('');
-                    } else {
-                        list.innerHTML = '<p>No shifts found.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading shifts:', error);
-                    document.getElementById('shifts-list').innerHTML =
-                        '<p style="color: red;">Error loading shifts: ' + error.message + '</p>';
-                });
-        }
-
-        document.addEventListener('DOMContentLoaded', loadVolunteers);
-    </script>
+    <script src="./web/static/js/pages_config.js"></script>
+    <script src="./web/static/js/pages_data.js"></script>
+    <script src="./web/static/js/pages_home.js"></script>
 </body>
 </html>
 

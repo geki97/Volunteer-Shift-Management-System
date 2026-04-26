@@ -8,8 +8,6 @@ supabase==2.3.0
 # Email services
 sendgrid==6.11.0
 
-# SMS service
-twilio==8.12.0
 
 # Google Calendar
 google-auth==2.27.0
@@ -23,10 +21,6 @@ Pillow==10.2.0
 
 # Security
 bleach==5.0.1
-
-# Web application
-Flask==3.0.1
-Flask-CORS==4.0.0
 
 # Scheduling
 schedule==1.2.0

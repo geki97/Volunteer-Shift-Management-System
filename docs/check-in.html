@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Volunteer Check-In</title>
+    <link rel="stylesheet" href="./web/static/css/style.css" />
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Volunteer Check-In</h1>
+            <p>Scan QR code to arrive and confirm attendance</p>
+        </header>
+
+        <main>
+            <div class="card">
+                <h3>Shift Details</h3>
+                <div id="shift-details">
+                    <div class="spinner"></div> Loading...
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Volunteer</h3>
+                <p id="volunteer-hint" style="color: var(--text-light); margin-bottom: 10px;">
+                    If your volunteer was not pre-selected, choose your name below.
+                </p>
+                <select id="volunteer-select" class="input-field" style="width: 100%; max-width: 480px;"></select>
+            </div>
+
+            <div class="card">
+                <h3>Confirm</h3>
+                <p style="color: var(--text-light);">
+                    This GitHub Pages page is static. To record attendance, configure a hosted check-in API
+                    endpoint and set it in <code>docs/web/static/js/pages_config.js</code>.
+                </p>
+                <button id="confirm-btn" class="btn-primary" style="margin-top: 12px;">Confirm Check-In</button>
+                <div id="result" style="margin-top: 12px;"></div>
+            </div>
+
+            <div class="card">
+                <h3>Back</h3>
+                <a class="btn-primary" href="./index.html">Return to Home</a>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 Food Bank Volunteer Management System</p>
+        </footer>
+    </div>
+
+    <script src="./web/static/js/pages_config.js"></script>
+    <script src="./web/static/js/pages_data.js"></script>
+    <script src="./web/static/js/pages_checkin.js"></script>
+</body>
+</html>

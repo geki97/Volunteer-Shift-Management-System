@@ -15,9 +15,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
 class TestRuntimeImport(unittest.TestCase):
-    def test_web_app_imports_cleanly(self):
+    def test_security_module_imports_cleanly(self):
         result = subprocess.run(
-            [sys.executable, "-c", "import web.check_in_app; print('IMPORT_OK')"],
+            [sys.executable, "-c", "from scripts.security.qr_secure import SecureQRCode; print('IMPORT_OK')"],
             cwd=PROJECT_ROOT,
             capture_output=True,
             text=True,
@@ -31,31 +31,16 @@ class TestRuntimeImport(unittest.TestCase):
         self.assertIn("IMPORT_OK", result.stdout)
 
 
-class TestAttendanceFallback(unittest.TestCase):
-    def test_token_checkin_falls_back_to_local_log_when_database_write_fails(self):
-        from web import check_in_app
+class TestSecureToken(unittest.TestCase):
+    def test_token_roundtrip_verification(self):
+        from scripts.security.qr_secure import SecureQRCode
 
-        token = check_in_app.SecureQRCode.generate_check_in_token("shift_demo", "user_demo", expiry_hours=1)
-        client = check_in_app.app.test_client()
+        token = SecureQRCode.generate_check_in_token("shift_demo", "user_demo", expiry_hours=1)
+        ok, payload = SecureQRCode.verify_check_in_token(token)
 
-        fallback_path = PROJECT_ROOT / "tmp_attendance_test.jsonl"
-        try:
-            if fallback_path.exists():
-                fallback_path.unlink()
-
-            with patch.object(
-                check_in_app.attendance_fallback, "ATTENDANCE_FALLBACK_FILE", fallback_path, create=True
-            ):
-                with patch.object(check_in_app.db, "mark_checked_in", return_value=None):
-                    resp = client.post(f"/check-in/token/{token}", json={"confirm": True})
-        finally:
-            if fallback_path.exists():
-                fallback_path.unlink()
-
-        self.assertEqual(resp.status_code, 200, msg=resp.get_data(as_text=True))
-        payload = resp.get_json()
-        self.assertTrue(payload.get("success"))
-        self.assertEqual(payload.get("source"), "local_fallback")
+        self.assertTrue(ok, msg=str(payload))
+        self.assertEqual(payload.get("shift_id"), "shift_demo")
+        self.assertEqual(payload.get("user_id"), "user_demo")
 
 
 class TestHealthReporting(unittest.TestCase):
@@ -176,12 +161,10 @@ class TestConfigValidation(unittest.TestCase):
             with patch.object(settings, "SUPABASE_KEY", "your_supabase_anon_key"):
                 with patch.object(settings, "SENDGRID_API_KEY", "sg.fake"):
                     with patch.object(settings, "SENDGRID_FROM_EMAIL", "test@example.com"):
-                        with patch.object(settings, "TWILIO_ACCOUNT_SID", "AC1234567890"):
-                            with patch.object(settings, "TWILIO_AUTH_TOKEN", "token"):
-                                with patch.object(settings, "FLASK_DEBUG", False):
-                                    with patch.object(settings, "FLASK_SECRET_KEY", "x" * 32):
-                                        with patch.object(settings, "QR_SIGNING_KEY", b"strong-signing-key-1234567890"):
-                                            errors = settings.validate_config()
+                        with patch.object(settings, "FLASK_DEBUG", False):
+                            with patch.object(settings, "FLASK_SECRET_KEY", "x" * 32):
+                                with patch.object(settings, "QR_SIGNING_KEY", b"strong-signing-key-1234567890"):
+                                    errors = settings.validate_config()
 
         self.assertTrue(
             any("placeholder" in error.lower() for error in errors),
@@ -220,9 +203,9 @@ class TestReportSafeClaims(unittest.TestCase):
     def test_env_template_uses_obvious_placeholders(self):
         template = (PROJECT_ROOT / ".env.template").read_text(encoding="utf-8", errors="replace")
 
-        self.assertIn("your_twilio_account_sid_here", template)
-        self.assertIn("your_twilio_auth_token_here", template)
-        self.assertIn("your_twilio_phone_number_here", template)
+        # Email placeholders should be present in the template.
+        self.assertIn("SENDGRID_API_KEY=your_sendgrid_api_key_here", template)
+        self.assertIn("GMAIL_USER=your.email@gmail.com", template)
 
 
 class TestLegacyHelperScripts(unittest.TestCase):

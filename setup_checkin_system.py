@@ -9,6 +9,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from scripts.security.qr_secure import SecureQRCode
+from config.settings import APP_BASE_URL
 import json
 import uuid
 
@@ -31,6 +32,12 @@ print("GENERATING QR CODES FOR UPCOMING SHIFTS")
 print("="*80)
 
 # Generate QR codes for each shift
+base_url = (APP_BASE_URL or "").strip().rstrip("/")
+if not base_url or not (base_url.startswith("http://") or base_url.startswith("https://")):
+    print("\n[WARN] APP_BASE_URL is not set to an absolute URL.")
+    print("       QR codes will contain a non-clickable/relative URL.")
+    print("       Set APP_BASE_URL in .env to your GitHub Pages or backend URL.\n")
+
 for i, shift in enumerate(shifts, 1):
     shift_id = shift.get('id')
     shift_name = shift.get('shift_name')
@@ -45,7 +52,11 @@ for i, shift in enumerate(shifts, 1):
     print(f"   Volunteers: {len(volunteers)}")
     
     try:
-        qr_path, token = SecureQRCode.generate_shift_qr_code(shift_id, shift_name)
+        qr_path, token = SecureQRCode.generate_shift_qr_code(
+            shift_id,
+            shift_name,
+            app_base_url=base_url if base_url else None,
+        )
         if qr_path:
             print(f"    QR Code Generated: {Path(qr_path).name}")
         else:
@@ -60,7 +71,7 @@ print("="*80)
 print("""
 STEP 1: Volunteer QR Scan
   -> Volunteer scans the printed/displayed QR code
-  -> Gets directed to: http://localhost:5000/check-in/{shift_id}
+  -> Gets directed to: <APP_BASE_URL>/check-in.html?token=<token>
 
 STEP 2: Shift Information Display
   -> System loads shift details from appflowy_exports/shifts.json
@@ -101,17 +112,15 @@ To start the system:
 1. Navigate to the volunteer-management-system directory:
    cd "c:\\Users\\giaco\\OneDrive\\Desktop\\Final Year Proj - Copia\\volunteer-management-system"
 
-2. Start the Flask web server:
-   python web\\check_in_app.py
-   OR
-   start_automation.bat
+2. Configure hosted URLs:
+   - Set APP_BASE_URL in .env to your hosted site (GitHub Pages) or backend base URL.
 
-3. Access the system:
-   Home Page:     http://localhost:5000/
-   Check-In Page: http://localhost:5000/check-in/{shift_id}
+3. Access the static site on GitHub Pages:
+   Home Page:     <APP_BASE_URL>/
+   Check-In Link: <APP_BASE_URL>/check-in.html?token=<token>
 
 4. For Testing (use shift ID from above):
-   Example: http://localhost:5000/check-in/morning_stock_check_-_march_23
+   Use scripts/send_test_qr_email.py --dry-run to generate a QR + preview email.
 
 FEATURES:
    Volunteer selection by name/skills

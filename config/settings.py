@@ -12,10 +12,7 @@ SENDGRID_FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', '')
 GMAIL_USER = os.getenv('GMAIL_USER', '')
 GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD', '')
 
-# Twilio Configuration
-TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID', '')
-TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN', '')
-TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER', '')
+# Note: SMS support removed for final project; keep email settings only
 
 # Supabase Configuration
 SUPABASE_URL = os.getenv('SUPABASE_URL', '')
@@ -49,7 +46,10 @@ if FLASK_DEBUG and SUPABASE_URL and 'production' in SUPABASE_URL.lower():
 TIMEZONE = os.getenv('TIMEZONE', 'Europe/Dublin')
 REMINDER_HOURS_BEFORE = int(os.getenv('REMINDER_HOURS_BEFORE', 24))
 SYNC_INTERVAL_MINUTES = int(os.getenv('SYNC_INTERVAL_MINUTES', 5))
-APP_BASE_URL = os.getenv('APP_BASE_URL', 'http://localhost:5000')
+# Base URL used when generating links/QR codes for emails.
+# For GitHub Pages, set this to your Pages URL (e.g., https://<user>.github.io/<repo>).
+# We intentionally avoid defaulting to localhost so the project stays "static-first".
+APP_BASE_URL = os.getenv('APP_BASE_URL', '').strip().rstrip("/")
 
 # File Paths
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -119,15 +119,6 @@ def validate_config():
         elif is_placeholder_value(GMAIL_USER) or is_placeholder_value(GMAIL_APP_PASSWORD):
             errors.append("[WARN] Gmail configuration still uses placeholder values")
 
-    # SMS configuration
-    if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN:
-        errors.append("[WARN] Twilio SMS configuration incomplete (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)")
-    elif (
-        is_placeholder_value(TWILIO_ACCOUNT_SID)
-        or is_placeholder_value(TWILIO_AUTH_TOKEN)
-        or is_placeholder_value(TWILIO_PHONE_NUMBER)
-    ):
-        errors.append("[WARN] Twilio SMS configuration still uses placeholder values")
 
     # Security configuration
     if not FLASK_DEBUG and (not FLASK_SECRET_KEY or len(FLASK_SECRET_KEY) < 32):
@@ -156,7 +147,7 @@ def print_config_status():
         print("=" * 60)
         print(f"  Database: {'Configured' if SUPABASE_URL and not is_placeholder_value(SUPABASE_URL) else 'Not configured'}")
         print(f"  Email: {EMAIL_PROVIDER.upper()}")
-        print(f"  SMS: Twilio {'Configured' if TWILIO_ACCOUNT_SID and not is_placeholder_value(TWILIO_ACCOUNT_SID) else 'Not configured'}")
+        print("  SMS: Disabled")
         print(f"  Debug Mode: {'ENABLED' if FLASK_DEBUG else 'Disabled'}")
         print(f"  Security Keys: {'Generated' if FLASK_SECRET_KEY else 'Using defaults (dev only)'}")
         print("=" * 60 + "\n")

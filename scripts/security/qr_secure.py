@@ -14,6 +14,7 @@ import json
 import base64
 from datetime import datetime, timedelta
 import pytz
+from urllib.parse import quote
 from config.settings import QR_CODE_OUTPUT_PATH, TIMEZONE
 from scripts.utils.logger import logger
 import os
@@ -146,13 +147,18 @@ class SecureQRCode:
         """
         try:
             if app_base_url is None:
-                app_base_url = os.getenv('APP_BASE_URL', 'http://localhost:5000')
+                # Do not default to localhost; require explicit base URL for hosted deployments.
+                app_base_url = os.getenv('APP_BASE_URL', '').strip().rstrip("/")
             
             # Generate secure token
             token = SecureQRCode.generate_check_in_token(shift_id, user_id or shift_id, expiry_hours)
             
             # Create QR code with token URL
-            qr_data = f"{app_base_url}/check-in/token/{token}"
+            token_q = quote(token, safe="")
+            if app_base_url:
+                qr_data = f"{app_base_url}/check-in.html?token={token_q}"
+            else:
+                qr_data = f"check-in.html?token={token_q}"
             
             qr = qrcode.QRCode(
                 version=2,  # Larger to accommodate token

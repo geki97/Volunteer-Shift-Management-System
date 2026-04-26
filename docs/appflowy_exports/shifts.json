@@ -1,2 +1,96 @@
-[]
-
+[
+  {
+    "id": "food_distribution_-_city_centre",
+    "shift_name": "Food Distribution - City Centre",
+    "shift_date": "Jan 30, 2026 14:00",
+    "end_time": "17:00",
+    "location": "O'Connell Street Community Centre",
+    "required_volunteers": 5,
+    "current_assigned": 5,
+    "status": "Completed",
+    "priority": "High",
+    "volunteer_roles": [
+      "Food Distribution"
+    ],
+    "assigned_volunteers": [
+      "sarah_murphy",
+      "james_o'connor",
+      "finn_o'brien",
+      "aoife_ryan",
+      "rosin_power"
+    ],
+    "shift_coordinator": "c01bb703-432a-4c5e-99d6-9296c36417d2",
+    "special_instructions": "Weekly food distribution for local families",
+    "created_date": "Jan 30, 2026"
+  },
+  {
+    "id": "evening_delivery_run_-_northside",
+    "shift_name": "Evening Delivery Run - Northside",
+    "shift_date": "Jan 31, 2026 18:00",
+    "end_time": "21:00",
+    "location": "Various locations - Northside",
+    "required_volunteers": 3,
+    "current_assigned": 3,
+    "status": "Completed",
+    "priority": "Medium",
+    "volunteer_roles": [
+      "Delivery"
+    ],
+    "assigned_volunteers": [
+      "sarah_murphy",
+      "james_o'connor",
+      "finn_o'brien"
+    ],
+    "shift_coordinator": "96d7a3ad-fbbe-4d41-b335-2a1c255cc407",
+    "special_instructions": "Deliver food parcels to elderly residents",
+    "created_date": "Jan 31, 2026"
+  },
+  {
+    "id": "weekend_food_prep",
+    "shift_name": "Weekend Food Prep",
+    "shift_date": "Jan 02, 2026 09:00",
+    "end_time": "13:00",
+    "location": "Main Kitchen - Temple Bar",
+    "required_volunteers": 6,
+    "current_assigned": 6,
+    "status": "Completed",
+    "priority": "High",
+    "volunteer_roles": [
+      "Food Distribution"
+    ],
+    "assigned_volunteers": [
+      "sarah_murphy",
+      "james_o'connor",
+      "finn_o'brien",
+      "aoife_ryan",
+      "rosin_power",
+      "emma_walsh"
+    ],
+    "shift_coordinator": "6a2f38b9-a9b1-4f50-9da8-590ba7af0679",
+    "special_instructions": "",
+    "created_date": "Jan 02, 2026"
+  },
+  {
+    "id": "morning_stock_check_and_inventory",
+    "shift_name": "Morning Stock Check & Inventory",
+    "shift_date": "Mar 23, 2026 09:00",
+    "end_time": "12:00",
+    "location": "Main Warehouse Distribution Hub",
+    "required_volunteers": 4,
+    "current_assigned": 4,
+    "status": "Open",
+    "priority": "Medium",
+    "volunteer_roles": [
+      "Inventory"
+    ],
+    "assigned_volunteers": [
+      "sarah_murphy",
+      "james_o'connor",
+      "finn_o'brien",
+      "aoife_ryan"
+    ],
+    "shift_coordinator": "sarah_murphy",
+    "special_instructions": "Please bring ID. Stock check day - count all items and update spreadsheet. Wear comfortable clothes for standing.",
+    "created_date": "Mar 23, 2026"
+  }
+]

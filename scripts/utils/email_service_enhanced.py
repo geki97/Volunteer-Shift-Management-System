@@ -181,19 +181,32 @@ def send_via_sendgrid_with_qr(to_email: str, subject: str, html_content: str,
         if text_content:
             message.plain_text_content = text_content
         
-        # Attach QR code if provided
+        # Attach QR code if provided.
+        # For SendGrid, we attach it inline with Content-ID "shift_qr" so the HTML
+        # template's `<img src="cid:shift_qr">` renders in most mail clients.
         if qr_code_path and Path(qr_code_path).exists():
             with open(qr_code_path, 'rb') as attachment:
                 data = base64.b64encode(attachment.read()).decode()
                 
-                # Add as attachment
-                att = Attachment(
+                # Inline (CID) attachment for in-body rendering
+                inline_att = Attachment(
+                    FileContent(data),
+                    FileName('shift_qr_code.png'),
+                    FileType('image/png'),
+                    Disposition('inline')
+                )
+                inline_att.content_id = "shift_qr"
+                message.add_attachment(inline_att)
+
+                # Also attach as a normal downloadable attachment for clients that
+                # don't support CID rendering.
+                file_att = Attachment(
                     FileContent(data),
                     FileName('shift_qr_code.png'),
                     FileType('image/png'),
                     Disposition('attachment')
                 )
-                message.attachment = att
+                message.add_attachment(file_att)
         
         sg = SendGridAPIClient(SENDGRID_API_KEY)
         response = sg.send(message)

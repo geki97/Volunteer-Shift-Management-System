@@ -1,2 +1,357 @@
-[]
-
+[
+  {
+    "id": "sarah_murphy",
+    "name": "Sarah Murphy",
+    "email": "sarah.murphy@email.com",
+    "phone": "353871234567",
+    "skills": [
+      "Customer Service",
+      "Food Prep"
+    ],
+    "availability": [
+      "Monday",
+      "Wednesday",
+      "Friday"
+    ],
+    "total_shifts_assigned": 32,
+    "shifts_completed": 32,
+    "no_shows": 0,
+    "cancellations": 0,
+    "reliability_score": 100.0,
+    "status": "Active",
+    "date_registered": "Oct 01, 2025",
+    "notes": ""
+  },
+  {
+    "id": "james_o'connor",
+    "name": "James O'Connor",
+    "email": "james.oconnor@email.com",
+    "phone": "353862345678",
+    "skills": [
+      "Setup",
+      "Cleanup",
+      "Delivery"
+    ],
+    "availability": [
+      "Tuesday",
+      "Thursday",
+      "Saturday"
+    ],
+    "total_shifts_assigned": 18,
+    "shifts_completed": 16,
+    "no_shows": 2,
+    "cancellations": 0,
+    "reliability_score": 88.0,
+    "status": "Active",
+    "date_registered": "Oct 08, 2025",
+    "notes": ""
+  },
+  {
+    "id": "finn_o'brien",
+    "name": "Finn O'Brien",
+    "email": "finn.obrien@email.com",
+    "phone": "353870123456",
+    "skills": [
+      "Food Prep",
+      "Delivery",
+      "Setup",
+      "Cleanup"
+    ],
+    "availability": [
+      "Monday",
+      "Friday",
+      "Wednesday",
+      "Thursday",
+      "Tuesday",
+      "Saturday",
+      "Sunday"
+    ],
+    "total_shifts_assigned": 30,
+    "shifts_completed": 27,
+    "no_shows": 3,
+    "cancellations": 0,
+    "reliability_score": 90.0,
+    "status": "Active",
+    "date_registered": "Sep 25, 2025",
+    "notes": ""
+  },
+  {
+    "id": "aoife_ryan",
+    "name": "Aoife Ryan",
+    "email": "aoife.ryan@email.com",
+    "phone": "353865678901",
+    "skills": [
+      "Cleanup",
+      "Setup",
+      "Customer Service"
+    ],
+    "availability": [
+      "Wednesday",
+      "Friday",
+      "Sunday"
+    ],
+    "total_shifts_assigned": 20,
+    "shifts_completed": 19,
+    "no_shows": 1,
+    "cancellations": 0,
+    "reliability_score": 92.0,
+    "status": "Active",
+    "date_registered": "Sep 22, 2025",
+    "notes": ""
+  },
+  {
+    "id": "rosin_power",
+    "name": "Rosin Power",
+    "email": "roisin.power@email.com",
+    "phone": "353864567890",
+    "skills": [
+      "Food Prep",
+      "Setup",
+      "Cleanup"
+    ],
+    "availability": [
+      "Sunday",
+      "Saturday"
+    ],
+    "total_shifts_assigned": 22,
+    "shifts_completed": 21,
+    "no_shows": 1,
+    "cancellations": 0,
+    "reliability_score": 96.0,
+    "status": "Active",
+    "date_registered": "Oct 10, 2025",
+    "notes": ""
+  },
+  {
+    "id": "emma_walsh",
+    "name": "Emma Walsh",
+    "email": "emma.walsh@email.com",
+    "phone": "353853456789",
+    "skills": [
+      "Admin",
+      "Customer Service"
+    ],
+    "availability": [
+      "Monday",
+      "Sunday",
+      "Saturday"
+    ],
+    "total_shifts_assigned": 32,
+    "shifts_completed": 32,
+    "no_shows": 0,
+    "cancellations": 0,
+    "reliability_score": 100.0,
+    "status": "Active",
+    "date_registered": "Oct 16, 2025",
+    "notes": ""
+  },
+  {
+    "id": "liam_kelly",
+    "name": "Liam Kelly",
+    "email": "liam.kelly@email.com",
+    "phone": "353874567890",
+    "skills": [
+      "Delivery",
+      "Food Prep"
+    ],
+    "availability": [
+      "Sunday",
+      "Saturday",
+      "Friday"
+    ],
+    "total_shifts_assigned": 15,
+    "shifts_completed": 12,
+    "no_shows": 3,
+    "cancellations": 0,
+    "reliability_score": 78.0,
+    "status": "Active",
+    "date_registered": "Oct 20, 2025",
+    "notes": ""
+  },
+  {
+    "id": "conor_byrne",
+    "name": "Conor Byrne",
+    "email": "conor.byrne@email.com",
+    "phone": "353856789012",
+    "skills": [
+      "Delivery"
+    ],
+    "availability": [
+      "Tuesday",
+      "Saturday"
+    ],
+    "total_shifts_assigned": 12,
+    "shifts_completed": 10,
+    "no_shows": 2,
+    "cancellations": 0,
+    "reliability_score": 85.0,
+    "status": "On Leave",
+    "date_registered": "Oct 15, 2025",
+    "notes": ""
+  },
+  {
+    "id": "ciara_doyle",
+    "name": "Ciara Doyle",
+    "email": "ciara.doyle@email.com",
+    "phone": "353859012345",
+    "skills": [
+      "Admin",
+      "Customer Service"
+    ],
+    "availability": [
+      "Monday",
+      "Tuesday",
+      "Thursday",
+      "Wednesday",
+      "Friday"
+    ],
+    "total_shifts_assigned": 26,
+    "shifts_completed": 26,
+    "no_shows": 0,
+    "cancellations": 0,
+    "reliability_score": 98.0,
+    "status": "Active",
+    "date_registered": "Sep 18, 2025",
+    "notes": ""
+  },
+  {
+    "id": "niamh_fitzgerald",
+    "name": "Niamh Fitzgerald",
+    "email": "niamh.fitz@email.com",
+    "phone": "353877890123",
+    "skills": [
+      "Food Prep",
+      "Admin"
+    ],
+    "availability": [
+      "Monday",
+      "Wednesday",
+      "Friday",
+      "Saturday"
+    ],
+    "total_shifts_assigned": 29,
+    "shifts_completed": 27,
+    "no_shows": 1,
+    "cancellations": 0,
+    "reliability_score": 94.0,
+    "status": "Active",
+    "date_registered": "Jan 09, 2026",
+    "notes": ""
+  },
+  {
+    "id": "clodagh_kavanagh",
+    "name": "Clodagh Kavanagh",
+    "email": "clodagh.k@email.com",
+    "phone": "353855678901",
+    "skills": [
+      "Admin",
+      "Customer Service",
+      "Food Prep"
+    ],
+    "availability": [
+      "Monday",
+      "Wednesday",
+      "Thursday",
+      "Friday"
+    ],
+    "total_shifts_assigned": 25,
+    "shifts_completed": 24,
+    "no_shows": 1,
+    "cancellations": 0,
+    "reliability_score": 93.0,
+    "status": "Active",
+    "date_registered": "Oct 01, 2025",
+    "notes": ""
+  },
+  {
+    "id": "oisã­n_mccarthy",
+    "name": "OisÃ­n McCarthy",
+    "email": "oisin.mccarthy@email.com",
+    "phone": "353868901234",
+    "skills": [
+      "Delivery",
+      "Setup",
+      "Cleanup"
+    ],
+    "availability": [
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "total_shifts_assigned": 10,
+    "shifts_completed": 7,
+    "no_shows": 3,
+    "cancellations": 0,
+    "reliability_score": 72.0,
+    "status": "Active",
+    "date_registered": "Jan 04, 2026",
+    "notes": ""
+  },
+  {
+    "id": "saoirse_brennan",
+    "name": "Saoirse Brennan",
+    "email": "saoirse.brennan@email.com",
+    "phone": "353861234567",
+    "skills": [
+      "Admin"
+    ],
+    "availability": [
+      "Monday",
+      "Wednesday",
+      "Friday"
+    ],
+    "total_shifts_assigned": 8,
+    "shifts_completed": 5,
+    "no_shows": 3,
+    "cancellations": 0,
+    "reliability_score": 65.0,
+    "status": "Inactive",
+    "date_registered": "Nov 20, 2025",
+    "notes": ""
+  },
+  {
+    "id": "darragh_hughes",
+    "name": "Darragh Hughes",
+    "email": "darragh.hughes@email.com",
+    "phone": "353852345678",
+    "skills": [
+      "Delivery",
+      "Customer Service"
+    ],
+    "availability": [
+      "Tuesday",
+      "Thursday",
+      "Sunday"
+    ],
+    "total_shifts_assigned": 16,
+    "shifts_completed": 14,
+    "no_shows": 2,
+    "cancellations": 0,
+    "reliability_score": 87.0,
+    "status": "Active",
+    "date_registered": "Sep 10, 2025",
+    "notes": ""
+  },
+  {
+    "id": "cian_murphy",
+    "name": "Cian Murphy",
+    "email": "cian.murphy@email.com",
+    "phone": "353873456789",
+    "skills": [
+      "Delivery"
+    ],
+    "availability": [
+      "Friday",
+      "Saturday"
+    ],
+    "total_shifts_assigned": 14,
+    "shifts_completed": 11,
+    "no_shows": 3,
+    "cancellations": 0,
+    "reliability_score": 82.0,
+    "status": "Active",
+    "date_registered": "Jan 11, 2026",
+    "notes": ""
+  }
+]

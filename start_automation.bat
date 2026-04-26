@@ -87,9 +87,6 @@ python scripts\calendar_sync.py
 echo 🔳 Generating QR codes for upcoming shifts...
 python setup_checkin_system.py
 
-echo 🌐 Starting web check-in server...
-start "Check-in Server" cmd /c "python web\check_in_app.py"
-
 REM Summary
 echo.
 echo ============================================================
@@ -97,12 +94,11 @@ echo ✅ All systems started!
 echo ============================================================
 echo.
 echo 📍 SERVICE INFORMATION:
-echo   🌐 Check-in app: http://localhost:5000
+echo   🌐 Frontend: Served via GitHub Pages (set APP_BASE_URL in .env for links/QR codes)
 echo.
 echo 📋 MONITOR LOGS:
 echo   📧 Reminder daemon: logs\reminder_daemon.log
 echo   🔄 Data sync: logs\data_sync_daemon.log
-echo   🌐 Web app: logs\check_in_app.log
 echo.
 echo   View logs with:
 echo   type logs\reminder_daemon.log
