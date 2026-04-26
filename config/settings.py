@@ -6,7 +6,7 @@ from pathlib import Path
 load_dotenv()
 
 # Email Configuration
-EMAIL_PROVIDER = os.getenv('EMAIL_PROVIDER', 'sendgrid')  # or 'gmail'
+EMAIL_PROVIDER = os.getenv('EMAIL_PROVIDER', 'sendgrid').strip().lower()  # or 'gmail'
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY', '')
 SENDGRID_FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', '')
 GMAIL_USER = os.getenv('GMAIL_USER', '')
@@ -43,7 +43,7 @@ FLASK_DEBUG = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
 
 # ⚠️  SECURITY: Debug mode should NEVER be True in production
 if FLASK_DEBUG and SUPABASE_URL and 'production' in SUPABASE_URL.lower():
-    raise ValueError("❌ SECURITY: Flask debug mode cannot be enabled in production!")
+    raise ValueError("SECURITY: Flask debug mode cannot be enabled in production!")
 
 # System Settings
 TIMEZONE = os.getenv('TIMEZONE', 'Europe/Dublin')
@@ -100,49 +100,43 @@ def validate_config():
         list: Error messages, empty if valid
     """
     errors = []
-    
+
     # Database configuration
     if not SUPABASE_URL or not SUPABASE_KEY:
-        errors.append("⚠️  Supabase credentials missing (SUPABASE_URL, SUPABASE_KEY)")
-    else:
-        if is_placeholder_value(SUPABASE_URL) or is_placeholder_value(SUPABASE_KEY):
-            errors.append("⚠️  Supabase configuration still uses placeholder values")
-    
+        errors.append("[WARN] Supabase credentials missing (SUPABASE_URL, SUPABASE_KEY)")
+    elif is_placeholder_value(SUPABASE_URL) or is_placeholder_value(SUPABASE_KEY):
+        errors.append("[WARN] Supabase configuration still uses placeholder values")
+
     # Email configuration
-    if EMAIL_PROVIDER == 'sendgrid':
+    if EMAIL_PROVIDER == "sendgrid":
         if not SENDGRID_API_KEY or not SENDGRID_FROM_EMAIL:
-            errors.append("⚠️  SendGrid configuration incomplete (SENDGRID_API_KEY, SENDGRID_FROM_EMAIL)")
+            errors.append("[WARN] SendGrid configuration incomplete (SENDGRID_API_KEY, SENDGRID_FROM_EMAIL)")
         elif is_placeholder_value(SENDGRID_API_KEY) or is_placeholder_value(SENDGRID_FROM_EMAIL):
-            errors.append("⚠️  SendGrid configuration still uses placeholder values")
-    elif EMAIL_PROVIDER == 'gmail':
+            errors.append("[WARN] SendGrid configuration still uses placeholder values")
+    elif EMAIL_PROVIDER == "gmail":
         if not GMAIL_USER or not GMAIL_APP_PASSWORD:
-            errors.append("⚠️  Gmail configuration incomplete (GMAIL_USER, GMAIL_APP_PASSWORD)")
+            errors.append("[WARN] Gmail configuration incomplete (GMAIL_USER, GMAIL_APP_PASSWORD)")
         elif is_placeholder_value(GMAIL_USER) or is_placeholder_value(GMAIL_APP_PASSWORD):
-            errors.append("⚠️  Gmail configuration still uses placeholder values")
-    
+            errors.append("[WARN] Gmail configuration still uses placeholder values")
+
     # SMS configuration
     if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN:
-        errors.append("⚠️  Twilio SMS configuration incomplete (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)")
+        errors.append("[WARN] Twilio SMS configuration incomplete (TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)")
     elif (
         is_placeholder_value(TWILIO_ACCOUNT_SID)
         or is_placeholder_value(TWILIO_AUTH_TOKEN)
         or is_placeholder_value(TWILIO_PHONE_NUMBER)
     ):
-        errors.append("⚠️  Twilio SMS configuration still uses placeholder values")
-    
+        errors.append("[WARN] Twilio SMS configuration still uses placeholder values")
+
     # Security configuration
     if not FLASK_DEBUG and (not FLASK_SECRET_KEY or len(FLASK_SECRET_KEY) < 32):
-        errors.append("❌ SECURITY: FLASK_SECRET_KEY must be set to a strong random value (min 32 chars)")
-    
-    if not FLASK_DEBUG and (not QR_SIGNING_KEY or QR_SIGNING_KEY == b'default-key-change-in-production'):
-        errors.append("❌ SECURITY: QR_SIGNING_KEY must be set to a strong random value in production")
-    
-    if os.path.exists(GOOGLE_CREDENTIALS_FILE):
-        pass  # Optional, only warning if used
-    else:
-        if EMAIL_PROVIDER != 'sendgrid' or GMAIL_USER:
-            pass  # Not critical if not using Google Calendar
-    
+        errors.append("[ERROR] SECURITY: FLASK_SECRET_KEY must be set to a strong random value (min 32 chars)")
+
+    if not FLASK_DEBUG and (not QR_SIGNING_KEY or QR_SIGNING_KEY == b"default-key-change-in-production"):
+        errors.append("[ERROR] SECURITY: QR_SIGNING_KEY must be set to a strong random value in production")
+
+    # Optional: Google credentials (only required if using Google APIs)
     return errors
 
 def print_config_status():
@@ -150,15 +144,15 @@ def print_config_status():
     errors = validate_config()
     
     if errors:
-        print("\n⚠️  Configuration Issues Detected:")
+        print("\n[WARN] Configuration Issues Detected:")
         print("=" * 60)
         for error in errors:
             print(f"  {error}")
         print("=" * 60)
-        print("\nℹ️  Some features may not work until these are configured.")
+        print("\n[INFO] Some features may not work until these are configured.")
         print("See .env.template for required variables.\n")
     else:
-        print("\n✅ All required configurations are present!")
+        print("\n[OK] All required configurations are present!")
         print("=" * 60)
         print(f"  Database: {'Configured' if SUPABASE_URL and not is_placeholder_value(SUPABASE_URL) else 'Not configured'}")
         print(f"  Email: {EMAIL_PROVIDER.upper()}")

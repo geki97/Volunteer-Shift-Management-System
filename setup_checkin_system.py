@@ -59,36 +59,36 @@ print("="*80)
 
 print("""
 STEP 1: Volunteer QR Scan
-  → Volunteer scans the printed/displayed QR code
-  → Gets directed to: http://localhost:5000/check-in/{shift_id}
+  -> Volunteer scans the printed/displayed QR code
+  -> Gets directed to: http://localhost:5000/check-in/{shift_id}
 
 STEP 2: Shift Information Display
-  → System loads shift details from appflowy_exports/shifts.json
-  → Shows:
-    • Shift name, date, time
-    • Location
-    • Shift coordinator
-    • Special instructions
+  -> System loads shift details from appflowy_exports/shifts.json
+  -> Shows:
+    - Shift name, date, time
+    - Location
+    - Shift coordinator
+    - Special instructions
 
 STEP 3: Volunteer Selection
-  → System loads assigned volunteers from JSON
-  → Displays volunteers as clickable cards with:
-    • Name
-    • Email
-    • Skills
-  → Volunteer clicks their name to select
+  -> System loads assigned volunteers from JSON
+  -> Displays volunteers as clickable cards with:
+    - Name
+    - Email
+    - Skills
+  -> Volunteer clicks their name to select
 
 STEP 4: Confirmation & Check-In
-  → System shows selected volunteer info
-  → Volunteer clicks "Confirm Check-In"
-  → System records check-in to Supabase database
-  → Volunteer sees success page with confirmation
+  -> System shows selected volunteer info
+  -> Volunteer clicks "Confirm Check-In"
+  -> System records check-in to Supabase (or local fallback log if DB is down)
+  -> Volunteer sees success page with confirmation
 
 STEP 5: Success Page
-  → Shows personalized welcome message
-  → Displays next steps
-  → Provides coordinator contact info
-  → Returns to home option
+  -> Shows personalized welcome message
+  -> Displays next steps
+  -> Provides coordinator contact info
+  -> Returns to home option
 """)
 
 print("="*80)
@@ -133,7 +133,7 @@ if qr_dir.exists():
     if qr_files:
         print(f"\n Generated QR Code Files ({len(qr_files)}):")
         for qr_file in sorted(qr_files):
-            print(f"   • {qr_file.name}")
+            print(f"   - {qr_file.name}")
     else:
         print("\n  No QR codes found in qr_codes/ directory")
 else:

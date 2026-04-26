@@ -13,6 +13,7 @@ from flask_cors import CORS
 from config.settings import FLASK_SECRET_KEY, FLASK_PORT, FLASK_DEBUG, TIMEZONE, APP_BASE_URL
 from scripts.utils.logger import logger
 from scripts.utils.database import db
+from scripts.utils import attendance_fallback
 from datetime import datetime, timedelta
 import pytz
 import uuid
@@ -223,12 +224,19 @@ def check_in_with_token(token):
                         'message': 'Check-in successful! Thank you for volunteering!',
                         'check_in_time': datetime.now(pytz.timezone(TIMEZONE)).isoformat()
                     })
-                else:
-                    logger.error(f"Failed to mark check-in for user {user_id}")
-                    return jsonify({
-                        'success': False,
-                        'error': 'Failed to process check-in. Please try again.'
-                    }), 500
+
+                # Database write failed or returned no rows: record locally so the
+                # system still works end-to-end during demos/offline mode.
+                attendance_fallback.append_check_in(shift_id=shift_id, user_id=user_id, method="token")
+                logger.warning(f"Check-in recorded via local fallback: user {user_id} shift {shift_id}")
+                return jsonify(
+                    {
+                        "success": True,
+                        "message": "Check-in recorded locally (database unavailable).",
+                        "check_in_time": datetime.now(pytz.timezone(TIMEZONE)).isoformat(),
+                        "source": "local_fallback",
+                    }
+                )
             
             except Exception as e:
                 logger.error(f"Error in check-in: {e}")
@@ -331,12 +339,17 @@ def check_in(shift_id):
                         'volunteer_name': volunteer_name,
                         'message': 'Check-in successful! Thank you for volunteering!'
                     })
-                else:
-                    logger.error(f"Failed to mark check-in for {volunteer_id}")
-                    return jsonify({
-                        'success': False,
-                        'error': 'Failed to process check-in. Please try again.'
-                    }), 500
+
+                attendance_fallback.append_check_in(shift_id=shift_id, user_id=volunteer_id, method="manual")
+                logger.warning(f"Check-in recorded via local fallback: user {volunteer_id} shift {shift_id}")
+                return jsonify(
+                    {
+                        "success": True,
+                        "volunteer_name": volunteer_name,
+                        "message": "Check-in recorded locally (database unavailable).",
+                        "source": "local_fallback",
+                    }
+                )
             
             except Exception as e:
                 logger.error(f"Error marking check-in: {e}")
@@ -503,6 +516,20 @@ def get_shift_attendance(shift_id):
     """Get shift attendance data"""
     try:
         assignments = db.get_shift_assignments(shift_id)
+
+        # If the database is down, the db helper returns [] which is ambiguous
+        # (could be "no assignments" or "query failed"). Use an explicit health
+        # check to decide whether to fall back to local check-in records.
+        health_check = getattr(db, "check_connection_status", None)
+        if not assignments and health_check is not None:
+            is_connected, _details = health_check()
+            if not is_connected:
+                return jsonify(
+                    {
+                        "success": True,
+                        "attendance": attendance_fallback.read_shift_attendance(shift_id),
+                    }
+                )
         
         attendance_data = {
             'total_assigned': len(assignments),
@@ -550,13 +577,10 @@ def generate_qr(shift_id):
         if not HAS_QR or not SecureQRCode:
             return jsonify({'success': False, 'error': 'QR code generation not available'}), 501
         
-        # Get shift details
-        result = db.client.table('shifts').select('*').eq('id', shift_id).execute()
-        
-        if not result.data:
+        # Get shift details (DB first, JSON fallback if DB unavailable)
+        shift = load_shift_with_fallback(shift_id)
+        if not shift:
             return jsonify({'success': False, 'error': 'Shift not found'}), 404
-        
-        shift = result.data[0]
         
         # Generate QR code (returns tuple of path and token)
         qr_path, token = SecureQRCode.generate_shift_qr_code(shift_id, shift['shift_name'])
@@ -565,6 +589,7 @@ def generate_qr(shift_id):
             return jsonify({
                 'success': True,
                 'qr_code_path': qr_path,
+                'check_in_url': f"{os.getenv('APP_BASE_URL', 'http://localhost:5000')}/check-in/token/{token}",
                 'message': 'QR code generated successfully'
             })
         else:
