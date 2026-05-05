@@ -54,7 +54,7 @@
     const cfg = window.VMS_CONFIG || {};
     const apiUrl = (cfg.checkinApiUrl || "").trim();
     if (!apiUrl) {
-      throw new Error("Missing VMS_CONFIG.checkinApiUrl (no hosted backend configured).");
+      throw new Error("Check-in API not configured.");
     }
 
     const body = {
@@ -81,9 +81,7 @@
     const parsed = window.VMS_DATA.parseToken(token);
     if (!parsed.ok) {
       els.shiftDetails().innerHTML =
-        '<p style="color: var(--danger-color);">Invalid token: ' +
-        escapeHtml(parsed.error) +
-        "</p>";
+        '<p style="color: var(--danger-color);">Invalid token.</p>';
       els.confirmBtn().disabled = true;
       return;
     }
@@ -99,7 +97,7 @@
       ]);
     } catch (e) {
       els.shiftDetails().innerHTML =
-        '<p style="color: var(--danger-color);">Failed to load exported data. Publish docs/appflowy_exports/*.json.</p>';
+        '<p style="color: var(--danger-color);">Unable to load shift data. Please try again.</p>';
       els.confirmBtn().disabled = true;
       return;
     }
@@ -121,15 +119,10 @@
         els.confirmBtn().disabled = true;
         const resp = await submitCheckin(payload, volunteerId);
         els.result().innerHTML =
-          '<p style="color: var(--secondary-color); font-weight: 600;">Check-in recorded.</p>' +
-          '<pre style="white-space: pre-wrap; margin-top: 10px;">' +
-          escapeHtml(JSON.stringify(resp, null, 2)) +
-          "</pre>";
+          '<p style="color: var(--secondary-color); font-weight: 600;">You\'re checked in!</p>';
       } catch (e) {
         els.result().innerHTML =
-          '<p style="color: var(--danger-color);">Check-in failed: ' +
-          escapeHtml(e && e.message ? e.message : String(e)) +
-          "</p>";
+          '<p style="color: var(--danger-color);">Check-in failed. Please try again.</p>';
       } finally {
         els.confirmBtn().disabled = false;
       }

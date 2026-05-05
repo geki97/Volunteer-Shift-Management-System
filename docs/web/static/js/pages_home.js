@@ -86,28 +86,28 @@
 
   async function loadVolunteers() {
     const list = el("volunteers-list");
-    if (list) list.innerHTML = '<div class="spinner"></div> Loading volunteers...';
+    if (list) list.innerHTML = '<div class="spinner"></div> Loading...';
     try {
       const volunteers = await window.VMS_DATA.loadVolunteers();
       renderVolunteers(volunteers);
     } catch (e) {
       if (list) {
         list.innerHTML =
-          '<p style="color: red;">Error loading volunteers. Did you run scripts/publish_github_pages_data.py?</p>';
+          '<p style="color: red;">Unable to load volunteers. Please try again.</p>';
       }
     }
   }
 
   async function loadShifts() {
     const list = el("shifts-list");
-    if (list) list.innerHTML = '<div class="spinner"></div> Loading shifts...';
+    if (list) list.innerHTML = '<div class="spinner"></div> Loading...';
     try {
       const shifts = await window.VMS_DATA.loadShifts();
       renderShifts(shifts);
     } catch (e) {
       if (list) {
         list.innerHTML =
-          '<p style="color: red;">Error loading shifts. Did you run scripts/publish_github_pages_data.py?</p>';
+          '<p style="color: red;">Unable to load shifts. Please try again.</p>';
       }
     }
   }

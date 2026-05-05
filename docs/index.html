@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.functions.supabase.co https://*.supabase.co; upgrade-insecure-requests">
     <meta name="referrer" content="no-referrer">
-    <title>Volunteer Check-In System</title>
+    <title>Food Bank Volunteers</title>
     <link rel="stylesheet" href="./web/static/css/style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Volunteer Check-In System</h1>
-            <p>Food Bank Volunteering</p>
+            <h1>Volunteers</h1>
+            <p>Food Bank Management</p>
         </header>
 
         <main>
             <div class="welcome-section">
-                <h2>Welcome to the Volunteer Management System</h2>
-                <p>Powered by AppFlowy - Food Bank Volunteering 2026</p>
+                <h2>Welcome</h2>
+                <p>Manage your volunteer team and shifts</p>
             </div>
 
             <div class="tabs">
@@ -42,23 +42,20 @@
             </div>
 
             <div id="checkin-tab" class="tab-content">
-                <h3>Quick Check-In</h3>
+                <h3>Check In</h3>
                 <div class="card">
-                    <p>Paste a token (or open this page from a QR scan):</p>
-                    <input type="text" id="token-input" class="input-field" placeholder="token..." style="width: 100%; max-width: 720px;">
+                    <p>Have a QR code? Enter your token to check in:</p>
+                    <input type="text" id="token-input" class="input-field" placeholder="Enter token" style="width: 100%; max-width: 720px;">
                     <div style="margin-top: 12px;">
-                        <a class="btn-primary" id="open-checkin-link" href="./check-in.html">Open Check-In Page</a>
+                        <a class="btn-primary" id="open-checkin-link" href="./check-in.html">Go to Check-In</a>
                     </div>
-                    <p style="margin-top: 10px; color: var(--text-light);">
-                        Tip: The QR code should open <code>check-in.html?token=...</code>.
-                    </p>
                 </div>
             </div>
         </main>
 
         <footer>
-            <p>&copy; 2026 Food Bank Volunteer Management System</p>
-            <p><a href="https://github.com/geki97/Volunteer-Shift-Management-System">View on GitHub</a></p>
+            <p>&copy; 2026 Food Bank Volunteers</p>
+            <p><a href="https://github.com/geki97/Volunteer-Shift-Management-System">GitHub</a></p>
         </footer>
     </div>
 

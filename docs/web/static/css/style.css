@@ -1,15 +1,15 @@
 /* Global Styles */
 :root {
-    --primary-color: #0066cc;
-    --primary-dark: #0052a3;
-    --secondary-color: #28a745;
-    --danger-color: #dc3545;
-    --warning-color: #ffc107;
-    --light-bg: #f5f7fa;
-    --border-color: #e0e6ed;
-    --text-color: #333;
-    --text-light: #666;
-    --shadow: 0 2px 8px rgba(0,0,0,0.1);
+    --primary-color: #2563eb;
+    --primary-dark: #1e40af;
+    --secondary-color: #10b981;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --light-bg: #f9fafb;
+    --border-color: #e5e7eb;
+    --text-color: #1f2937;
+    --text-light: #6b7280;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 * {
@@ -41,23 +41,25 @@ body {
 
 /* Header */
 header {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, #1e3a8a 100%);
     color: white;
     padding: 40px 20px;
     text-align: center;
     margin-bottom: 30px;
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow: var(--shadow);
 }
 
 header h1 {
     font-size: 2.5rem;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
+    font-weight: 700;
 }
 
 header p {
-    font-size: 1.1rem;
-    opacity: 0.9;
+    font-size: 1rem;
+    opacity: 0.95;
+    font-weight: 500;
 }
 
 /* Main Content */
@@ -69,17 +71,23 @@ main {
 /* Cards */
 .card {
     background: white;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
     box-shadow: var(--shadow);
     border-left: 4px solid var(--primary-color);
+    transition: box-shadow 0.3s;
+}
+
+.card:hover {
+    box-shadow: 0 4px 6px rgba(0,0,0,0.07);
 }
 
 .card h3 {
     color: var(--primary-color);
-    margin-bottom: 15px;
-    font-size: 1.3rem;
+    margin-bottom: 16px;
+    font-size: 1.25rem;
+    font-weight: 600;
 }
 
 .card ol, .card ul {
@@ -211,7 +219,7 @@ main {
 
 .btn {
     padding: 12px 24px;
-    border-radius: 6px;
+    border-radius: 8px;
     border: none;
     font-size: 1rem;
     font-weight: 600;
@@ -219,7 +227,7 @@ main {
     text-decoration: none;
     display: inline-block;
     text-align: center;
-    transition: all 0.3s;
+    transition: all 0.2s;
 }
 
 .btn-primary {
@@ -229,18 +237,17 @@ main {
 
 .btn-primary:hover {
     background: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+    box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
 }
 
 .btn-secondary {
-    background: var(--border-color);
+    background: var(--light-bg);
     color: var(--text-color);
+    border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
-    background: #d0d6de;
-    transform: translateY(-2px);
+    background: var(--border-color);
 }
 
 .btn:disabled {
