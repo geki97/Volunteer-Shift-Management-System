@@ -11,12 +11,37 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 
-function json(status: number, body: unknown) {
+function corsHeadersFor(req: Request) {
+  const origin = req.headers.get("origin") ?? "";
+
+  // Comma-separated list, e.g.:
+  //   ALLOWED_ORIGINS=https://geki97.github.io,http://localhost:5173
+  // If unset, default to the expected GitHub Pages origin for this project.
+  const configured = (Deno.env.get("ALLOWED_ORIGINS") ?? "https://geki97.github.io")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const allowed = !!origin && configured.includes(origin);
+  const headers: Record<string, string> = {
+    "access-control-allow-methods": "POST, OPTIONS",
+    "access-control-allow-headers": "content-type",
+    "access-control-max-age": "86400",
+    // Avoid caching responses across origins.
+    "vary": "origin",
+  };
+
+  if (allowed) headers["access-control-allow-origin"] = origin;
+  return { allowed, headers };
+}
+
+function json(req: Request, status: number, body: unknown) {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       "content-type": "application/json; charset=utf-8",
       "cache-control": "no-store",
+      ...corsHeadersFor(req).headers,
     },
   });
 }
@@ -79,17 +104,29 @@ function parseAndVerifyToken(decoded: string, signingKey: string): Promise<{ ok:
       return { ok: false, error: "Invalid JSON payload" } as const;
     }
 
-    if (!payload.shift_id || !payload.user_id || !payload.expires_at) {
+    if (!payload.shift_id || !payload.user_id || !payload.issued_at || !payload.expires_at || !payload.nonce) {
       return { ok: false, error: "Missing required token fields" } as const;
     }
 
     const now = new Date();
+    const issued = new Date(payload.issued_at);
     const exp = new Date(payload.expires_at);
+    if (Number.isNaN(issued.getTime())) {
+      return { ok: false, error: "Invalid issued_at" } as const;
+    }
     if (Number.isNaN(exp.getTime())) {
       return { ok: false, error: "Invalid expires_at" } as const;
     }
+    // Basic sanity: issued_at shouldn't be too far in the future.
+    if (issued.getTime() - now.getTime() > 5 * 60 * 1000) {
+      return { ok: false, error: "issued_at is in the future" } as const;
+    }
     if (now > exp) {
       return { ok: false, error: "Token expired" } as const;
+    }
+    // Hard cap validity window (defense-in-depth)
+    if (exp.getTime() - issued.getTime() > 7 * 24 * 60 * 60 * 1000) {
+      return { ok: false, error: "Token validity window too large" } as const;
     }
 
     return { ok: true, payload } as const;
@@ -97,42 +134,59 @@ function parseAndVerifyToken(decoded: string, signingKey: string): Promise<{ ok:
 }
 
 Deno.serve(async (req) => {
-  if (req.method !== "POST") return json(405, { ok: false, error: "Method not allowed" });
+  // CORS preflight
+  if (req.method === "OPTIONS") {
+    const cors = corsHeadersFor(req);
+    if (req.headers.get("origin") && !cors.allowed) {
+      return json(req, 403, { ok: false, error: "Origin not allowed" });
+    }
+    return new Response(null, { status: 204, headers: cors.headers });
+  }
+
+  if (req.method !== "POST") return json(req, 405, { ok: false, error: "Method not allowed" });
 
   const signingKey = Deno.env.get("QR_SIGNING_KEY") ?? "";
   const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
   const serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
   if (!signingKey || !supabaseUrl || !serviceRole) {
-    return json(500, { ok: false, error: "Server not configured" });
+    return json(req, 500, { ok: false, error: "Server not configured" });
   }
 
   let body: any;
   try {
     body = await req.json();
   } catch {
-    return json(400, { ok: false, error: "Invalid JSON body" });
+    return json(req, 400, { ok: false, error: "Invalid JSON body" });
   }
 
   const token = String(body?.token ?? "").trim();
   const source = String(body?.source ?? "github_pages").slice(0, 64);
   const requestedVolunteerId = String(body?.volunteer_id ?? "").trim();
 
-  if (!token) return json(400, { ok: false, error: "Missing token" });
+  if (!token) return json(req, 400, { ok: false, error: "Missing token" });
+
+  // If this is a browser request and the origin isn't allowed, block it early.
+  // (Non-browser callers typically won't set Origin, so this only applies when Origin is present.)
+  const origin = req.headers.get("origin");
+  if (origin) {
+    const cors = corsHeadersFor(req);
+    if (!cors.allowed) return json(req, 403, { ok: false, error: "Origin not allowed" });
+  }
 
   let decoded: string;
   try {
     decoded = b64Decode(token);
   } catch {
-    return json(400, { ok: false, error: "Token is not valid base64" });
+    return json(req, 400, { ok: false, error: "Token is not valid base64" });
   }
 
   const verified = await parseAndVerifyToken(decoded, signingKey);
-  if (!verified.ok) return json(401, verified);
+  if (!verified.ok) return json(req, 401, verified);
 
   const payload = verified.payload;
 
   const volunteerId = requestedVolunteerId || payload.user_id;
-  if (!volunteerId) return json(400, { ok: false, error: "Missing volunteer_id" });
+  if (!volunteerId) return json(req, 400, { ok: false, error: "Missing volunteer_id" });
 
   const supabase = createClient(supabaseUrl, serviceRole, { auth: { persistSession: false } });
 
@@ -146,9 +200,22 @@ Deno.serve(async (req) => {
     checked_in_at: new Date().toISOString(),
   };
 
+  // Best-effort replay protection (database uniqueness is the real safety net).
+  if (payload.nonce) {
+    const { data: existing, error: existingErr } = await supabase
+      .from("checkins")
+      .select("id")
+      .eq("token_nonce", payload.nonce)
+      .limit(1);
+
+    if (existingErr) return json(req, 500, { ok: false, error: existingErr.message });
+    if (existing && existing.length) {
+      return json(req, 409, { ok: false, error: "Token already used" });
+    }
+  }
+
   const { data, error } = await supabase.from("checkins").insert(insertRow).select("*").single();
-  if (error) return json(500, { ok: false, error: error.message });
+  if (error) return json(req, 500, { ok: false, error: error.message });
 
-  return json(200, { ok: true, checkin: data });
+  return json(req, 200, { ok: true, checkin: data });
 });
-

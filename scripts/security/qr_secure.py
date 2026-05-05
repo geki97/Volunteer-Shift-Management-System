@@ -15,12 +15,11 @@ import base64
 from datetime import datetime, timedelta
 import pytz
 from urllib.parse import quote
-from config.settings import QR_CODE_OUTPUT_PATH, TIMEZONE
+from config.settings import QR_CODE_OUTPUT_PATH, TIMEZONE, QR_SIGNING_KEY
 from scripts.utils.logger import logger
 import os
 
-# Use environment variable for signing key, fallback to configuration
-QR_SIGNING_KEY = os.getenv('QR_SIGNING_KEY', '').encode() or b'default-key-change-in-production'
+QR_SIGNING_KEY_BYTES = QR_SIGNING_KEY.encode("utf-8") if QR_SIGNING_KEY else None
 
 class SecureQRCode:
     """Generate and validate cryptographically signed QR codes"""
@@ -39,6 +38,8 @@ class SecureQRCode:
             str: Base64-encoded signed token (format: data.signature)
         """
         try:
+            if not QR_SIGNING_KEY_BYTES:
+                raise ValueError("QR_SIGNING_KEY is not set. Add it to .env before generating tokens.")
             tz = pytz.timezone(TIMEZONE)
             now = datetime.now(tz)
             expiry = now + timedelta(hours=expiry_hours)
@@ -56,7 +57,7 @@ class SecureQRCode:
             
             # Generate HMAC signature
             signature = hmac.new(
-                QR_SIGNING_KEY,
+                QR_SIGNING_KEY_BYTES,
                 token_json.encode(),
                 hashlib.sha256
             ).hexdigest()
@@ -86,6 +87,8 @@ class SecureQRCode:
             tuple: (is_valid: bool, token_data: dict or error_msg: str)
         """
         try:
+            if not QR_SIGNING_KEY_BYTES:
+                return False, "QR_SIGNING_KEY is not set on server."
             # Decode from base64
             token_json_and_sig = base64.b64decode(encoded_token).decode()
             
@@ -98,7 +101,7 @@ class SecureQRCode:
             
             # Verify signature
             expected_signature = hmac.new(
-                QR_SIGNING_KEY,
+                QR_SIGNING_KEY_BYTES,
                 token_json.encode(),
                 hashlib.sha256
             ).hexdigest()

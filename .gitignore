@@ -21,16 +21,21 @@ ENV/
 # Logs
 logs/*.log
 *.log
+logs/*.txt
+logs/*.jsonl
+logs/
 
 # Generated files
 qr_codes/*.png
 reports/*.json
 reports/*.html
 appflowy_exports/*.json
+outbox/
 
 # Temporary files
 tmp*/
 *.tmp
+.pytest_cache/
 
 # Credentials
 config/credentials.json

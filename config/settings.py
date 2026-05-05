@@ -1,64 +1,34 @@
 import os
-from dotenv import load_dotenv
 from pathlib import Path
 
-# Load environment variables
+from dotenv import load_dotenv
+
+# Load local environment variables from .env (never commit .env).
 load_dotenv()
 
 # Email Configuration
-EMAIL_PROVIDER = os.getenv('EMAIL_PROVIDER', 'sendgrid').strip().lower()  # or 'gmail'
-SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY', '')
-SENDGRID_FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', '')
-GMAIL_USER = os.getenv('GMAIL_USER', '')
-GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD', '')
+EMAIL_PROVIDER = os.getenv("EMAIL_PROVIDER", "sendgrid").strip().lower()  # or "gmail"
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", "").strip()
+SENDGRID_FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL", "").strip()
+GMAIL_USER = os.getenv("GMAIL_USER", "").strip()
+GMAIL_APP_PASSWORD = os.getenv("GMAIL_APP_PASSWORD", "").strip()
 
-# Note: SMS support removed for final project; keep email settings only
-
-# Supabase Configuration
-SUPABASE_URL = os.getenv('SUPABASE_URL', '')
-SUPABASE_KEY = os.getenv('SUPABASE_KEY', '')
-
-# Google Calendar Configuration
-GOOGLE_CREDENTIALS_FILE = os.getenv('GOOGLE_CREDENTIALS_FILE', 'config/credentials.json')
-GOOGLE_TOKEN_FILE = os.getenv('GOOGLE_TOKEN_FILE', 'config/token.json')
-
-# ⚠️  SECURITY: These must be set to random values in production
-# Never use defaults or weak values for security keys
-FLASK_SECRET_KEY = os.getenv('FLASK_SECRET_KEY')
-if not FLASK_SECRET_KEY or len(FLASK_SECRET_KEY) < 32:
-    # Generate a warning but allow dev mode
-    if os.getenv('FLASK_DEBUG') == 'False':
-        raise ValueError("FLASK_SECRET_KEY must be set to a random value (min 32 chars) for production")
-
-QR_SIGNING_KEY = os.getenv('QR_SIGNING_KEY', '').encode() if os.getenv('QR_SIGNING_KEY') else b'default-key-change-in-production'
-ADMIN_API_KEY = os.getenv('ADMIN_API_KEY', '')
-SECURITY_TOKEN_KEY = os.getenv('SECURITY_TOKEN_KEY', '')
-
-# Application Settings
-FLASK_PORT = int(os.getenv('FLASK_PORT', 5000))
-FLASK_DEBUG = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
-
-# ⚠️  SECURITY: Debug mode should NEVER be True in production
-if FLASK_DEBUG and SUPABASE_URL and 'production' in SUPABASE_URL.lower():
-    raise ValueError("SECURITY: Flask debug mode cannot be enabled in production!")
+# Security: required for signing QR tokens (no insecure defaults)
+QR_SIGNING_KEY = os.getenv("QR_SIGNING_KEY", "").strip()
 
 # System Settings
-TIMEZONE = os.getenv('TIMEZONE', 'Europe/Dublin')
-REMINDER_HOURS_BEFORE = int(os.getenv('REMINDER_HOURS_BEFORE', 24))
-SYNC_INTERVAL_MINUTES = int(os.getenv('SYNC_INTERVAL_MINUTES', 5))
-# Base URL used when generating links/QR codes for emails.
-# For GitHub Pages, set this to your Pages URL (e.g., https://<user>.github.io/<repo>).
-# We intentionally avoid defaulting to localhost so the project stays "static-first".
-APP_BASE_URL = os.getenv('APP_BASE_URL', '').strip().rstrip("/")
+TIMEZONE = os.getenv("TIMEZONE", "Europe/Dublin").strip()
+
+# Base URL used in email links and QR content (GitHub Pages base URL).
+APP_BASE_URL = os.getenv("APP_BASE_URL", "").strip().rstrip("/")
 
 # File Paths
 BASE_DIR = Path(__file__).resolve().parent.parent
-APPFLOWY_EXPORT_PATH = BASE_DIR / os.getenv('APPFLOWY_EXPORT_PATH', 'appflowy_exports/')
-QR_CODE_OUTPUT_PATH = BASE_DIR / os.getenv('QR_CODE_OUTPUT_PATH', 'qr_codes/')
-LOG_FILE_PATH = BASE_DIR / os.getenv('LOG_FILE_PATH', 'logs/')
+APPFLOWY_EXPORT_PATH = BASE_DIR / os.getenv("APPFLOWY_EXPORT_PATH", "appflowy_exports/")
+QR_CODE_OUTPUT_PATH = BASE_DIR / os.getenv("QR_CODE_OUTPUT_PATH", "qr_codes/")
+LOG_FILE_PATH = BASE_DIR / os.getenv("LOG_FILE_PATH", "logs/")
 
-# Create directories if they don't exist
-for path in [APPFLOWY_EXPORT_PATH, QR_CODE_OUTPUT_PATH, LOG_FILE_PATH]:
+for path in (APPFLOWY_EXPORT_PATH, QR_CODE_OUTPUT_PATH, LOG_FILE_PATH):
     path.mkdir(parents=True, exist_ok=True)
 
 
@@ -72,42 +42,33 @@ def is_placeholder_value(value):
         return False
 
     placeholder_markers = (
-        'your_',
-        'your-',
-        'your.',
-        'your ',
-        'placeholder',
-        'changeme',
-        'change-me',
-        'replace_me',
-        'replace-me',
-        'example',
-        'dummy',
+        "your_",
+        "your-",
+        "your.",
+        "your ",
+        "placeholder",
+        "changeme",
+        "change-me",
+        "replace_me",
+        "replace-me",
+        "example",
+        "dummy",
     )
 
     return (
-        normalized.startswith('https://your-project.')
-        or normalized.endswith('.example.com')
+        normalized.startswith("https://your-project.")
+        or normalized.endswith(".example.com")
         or any(marker in normalized for marker in placeholder_markers)
     )
 
-# Validate required settings
+
 def validate_config():
     """
-    Validate that all required configuration is present
-    
-    Returns:
-        list: Error messages, empty if valid
+    Validate that required configuration is present.
+    Returns list[str] of errors/warnings.
     """
     errors = []
 
-    # Database configuration
-    if not SUPABASE_URL or not SUPABASE_KEY:
-        errors.append("[WARN] Supabase credentials missing (SUPABASE_URL, SUPABASE_KEY)")
-    elif is_placeholder_value(SUPABASE_URL) or is_placeholder_value(SUPABASE_KEY):
-        errors.append("[WARN] Supabase configuration still uses placeholder values")
-
-    # Email configuration
     if EMAIL_PROVIDER == "sendgrid":
         if not SENDGRID_API_KEY or not SENDGRID_FROM_EMAIL:
             errors.append("[WARN] SendGrid configuration incomplete (SENDGRID_API_KEY, SENDGRID_FROM_EMAIL)")
@@ -118,39 +79,36 @@ def validate_config():
             errors.append("[WARN] Gmail configuration incomplete (GMAIL_USER, GMAIL_APP_PASSWORD)")
         elif is_placeholder_value(GMAIL_USER) or is_placeholder_value(GMAIL_APP_PASSWORD):
             errors.append("[WARN] Gmail configuration still uses placeholder values")
+    else:
+        errors.append(f"[ERROR] Unknown EMAIL_PROVIDER: {EMAIL_PROVIDER!r}")
 
+    if not QR_SIGNING_KEY or is_placeholder_value(QR_SIGNING_KEY):
+        errors.append("[ERROR] SECURITY: QR_SIGNING_KEY must be set to a strong random value (required).")
 
-    # Security configuration
-    if not FLASK_DEBUG and (not FLASK_SECRET_KEY or len(FLASK_SECRET_KEY) < 32):
-        errors.append("[ERROR] SECURITY: FLASK_SECRET_KEY must be set to a strong random value (min 32 chars)")
+    if not APP_BASE_URL or not (APP_BASE_URL.startswith("http://") or APP_BASE_URL.startswith("https://")):
+        errors.append("[WARN] APP_BASE_URL should be set to your GitHub Pages URL for clickable QR codes.")
 
-    if not FLASK_DEBUG and (not QR_SIGNING_KEY or QR_SIGNING_KEY == b"default-key-change-in-production"):
-        errors.append("[ERROR] SECURITY: QR_SIGNING_KEY must be set to a strong random value in production")
-
-    # Optional: Google credentials (only required if using Google APIs)
     return errors
 
+
 def print_config_status():
-    """Print configuration status for debugging"""
     errors = validate_config()
-    
     if errors:
         print("\n[WARN] Configuration Issues Detected:")
         print("=" * 60)
-        for error in errors:
-            print(f"  {error}")
+        for err in errors:
+            print(f"  {err}")
         print("=" * 60)
-        print("\n[INFO] Some features may not work until these are configured.")
-        print("See .env.template for required variables.\n")
-    else:
-        print("\n[OK] All required configurations are present!")
-        print("=" * 60)
-        print(f"  Database: {'Configured' if SUPABASE_URL and not is_placeholder_value(SUPABASE_URL) else 'Not configured'}")
-        print(f"  Email: {EMAIL_PROVIDER.upper()}")
-        print("  SMS: Disabled")
-        print(f"  Debug Mode: {'ENABLED' if FLASK_DEBUG else 'Disabled'}")
-        print(f"  Security Keys: {'Generated' if FLASK_SECRET_KEY else 'Using defaults (dev only)'}")
-        print("=" * 60 + "\n")
+        print("\n[INFO] See .env.template for required variables.\n")
+        return
+
+    print("\n[OK] Configuration looks good.")
+    print("=" * 60)
+    print(f"  Email provider: {EMAIL_PROVIDER}")
+    print("  QR signing key: configured")
+    print(f"  Base URL: {APP_BASE_URL}")
+    print("=" * 60 + "\n")
+
 
 if __name__ == "__main__":
     print_config_status()

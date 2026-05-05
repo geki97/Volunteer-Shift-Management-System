@@ -1,13 +1,13 @@
 @echo off
 REM ============================================================
-REM Volunteer Management System - Automation Startup Script
+REM Volunteer Management System - GitHub Pages Build Script
 REM ============================================================
 
 setlocal enabledelayedexpansion
 
 echo.
 echo ============================================================
-echo  🚀 Starting Volunteer Management Automation System
+echo  Building GitHub Pages Artifacts
 echo ============================================================
 echo.
 
@@ -17,9 +17,8 @@ cd /d "%SCRIPT_DIR%"
 
 REM Check if virtual environment exists
 if not exist "venv\" (
-    echo ❌ ERROR: Virtual environment not found!
-    echo.
-    echo Please create a virtual environment first:
+    echo ERROR: Virtual environment not found.
+    echo Create it with:
     echo   python -m venv venv
     echo   venv\Scripts\activate.bat
     echo   pip install -r requirements.txt
@@ -29,90 +28,20 @@ if not exist "venv\" (
 )
 
 REM Activate virtual environment
-echo 🔧 Activating Python virtual environment...
 call venv\Scripts\activate.bat
 
-REM Check if AppFlowy exports exist
+echo Publishing exports to docs/ for GitHub Pages...
+python scripts\vms.py publish-pages --convert-first
+
 echo.
-echo 📤 Checking AppFlowy exports...
+echo Generating QR codes...
+python scripts\vms.py generate-qrs
 
-if not exist "appflowy_exports\volunteers.json" (
-    echo ⚠️  WARNING: volunteers.json not found
-    echo   Please export from AppFlowy first:
-    echo   1. Open AppFlowy workspace
-    echo   2. Export Volunteers table to CSV
-    echo   3. Save to: appflowy_exports/volunteers.csv
-)
-
-if not exist "appflowy_exports\shifts.json" (
-    echo ⚠️  WARNING: shifts.json not found
-    echo   Please export from AppFlowy first:
-    echo   1. Open AppFlowy workspace
-    echo   2. Export Shifts table to CSV
-    echo   3. Save to: appflowy_exports/shifts.csv
-)
-
-if exist "appflowy_exports\volunteers.csv" (
-    echo 📋 Found CSV exports, converting to JSON...
-    python scripts\csv_to_json_converter.py
-)
-
-REM Run initial sync
-echo.
-echo 🔄 Running initial AppFlowy → Supabase sync...
-python scripts\appflowy_sync_manager.py
-
-REM Check system status
-echo.
-echo 🔍 Checking system status...
-python scripts\check_status.py
-
-REM Create logs directory
-if not exist "logs\" mkdir logs
-
-REM Start daemons in background windows
-echo.
-echo ⏳ Starting background services...
-echo.
-
-echo 📧 Starting email reminder daemon...
-start "Reminder Daemon" cmd /c "python scripts\reminder_daemon.py"
-
-echo 🔄 Starting data sync daemon...
-start "Data Sync Daemon" cmd /c "python scripts\data_sync_daemon.py"
-
-echo 📅 Syncing calendar...
-python scripts\calendar_sync.py
-
-echo 🔳 Generating QR codes for upcoming shifts...
-python setup_checkin_system.py
-
-REM Summary
 echo.
 echo ============================================================
-echo ✅ All systems started!
-echo ============================================================
-echo.
-echo 📍 SERVICE INFORMATION:
-echo   🌐 Frontend: Served via GitHub Pages (set APP_BASE_URL in .env for links/QR codes)
-echo.
-echo 📋 MONITOR LOGS:
-echo   📧 Reminder daemon: logs\reminder_daemon.log
-echo   🔄 Data sync: logs\data_sync_daemon.log
-echo.
-echo   View logs with:
-echo   type logs\reminder_daemon.log
-echo   or use: tail -f logs\reminder_daemon.log (in Git Bash)
-echo.
-echo 🛑 TO STOP ALL SERVICES:
-echo   Run: stop_automation.bat
-echo.
-echo 💡 FIRST TIME USAGE:
-echo   1. Set up .env file with your API keys
-echo   2. Export volunteers.csv and shifts.csv from AppFlowy
-echo   3. Re-run this script
-echo.
+echo  Done. Commit and push so GitHub Pages updates.
 echo ============================================================
 echo.
 
 pause
+

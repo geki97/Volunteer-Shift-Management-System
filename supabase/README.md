@@ -15,6 +15,7 @@ Configure environment variables on Supabase:
 - `QR_SIGNING_KEY` (must match your `.env` used to generate QR tokens)
 - `SUPABASE_URL`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `ALLOWED_ORIGINS` (comma-separated allowed browser origins; defaults to `https://geki97.github.io`)
 
 Then set the frontend config in:
 
@@ -31,5 +32,7 @@ window.VMS_CONFIG = {
 
 ## Database table
 
-Use `supabase/migrations/20260426_create_checkins.sql` to create a `checkins` table.
+Use these migrations:
 
+- `supabase/migrations/20260426_create_checkins.sql` (creates table)
+- `supabase/migrations/20260429_harden_checkins_nonce.sql` (prevents nonce replay via a unique index)

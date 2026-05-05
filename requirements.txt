@@ -1,34 +1,10 @@
-# Core dependencies
+# Core
 python-dotenv==1.0.0
-requests==2.31.0
 
-# Database and API
-supabase==2.3.0
-
-# Email services
+# Email
 sendgrid==6.11.0
 
-
-# Google Calendar
-google-auth==2.27.0
-google-auth-oauthlib==1.2.0
-google-auth-httplib2==0.2.0
-google-api-python-client==2.116.0
-
-# QR Code generation
+# QR + timezones
 qrcode[pil]==7.4.2
 Pillow==10.2.0
-
-# Security
-bleach==5.0.1
-
-# Scheduling
-schedule==1.2.0
-
-# Data handling
-pandas==2.2.0
-openpyxl==3.1.2
-
-# Utilities
-python-dateutil==2.8.2
 pytz==2024.1
